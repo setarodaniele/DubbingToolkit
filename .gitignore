@@ -1,0 +1,55 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Log
+*.log
+
+# Virtual environment
+venv/
+
+# Credenziali API (NON devono essere pubblicate)
+credentials/*.json
+!credentials/*.template.json
+
+# Cartelle temporanee (ovunque nel progetto)
+Temp/
+Temp2/
+temp2/
+temp/
+cache/
+nppBackup/
+Backup/
+
+
+# Dati runtime billing (ricreati automaticamente da monitoraggio_consumo.py)
+Billing/consumo_tts.json
+
+# Cartelle dati operativi
+Audio_Extracted/
+Audio_Input/
+Transcripts/
+Translated/
+Dubbed/
+Subtitles/
+Output/
+Logs/
+
+# Installazioni locali Python
+Installation/
+
+# Repository modelli locali
+Repository/
+
+# Build
+installer/build_payload/
+
+# Video sorgente
+Video_Input/
+
+# FFmpeg binaries (troppo grandi per GitHub)
+Tools/ffmpeg-7.1.1-full_build/bin/ffmpeg.exe
+Tools/ffmpeg-7.1.1-full_build/bin/ffprobe.exe
+Tools/ffmpeg-7.1.1-full_build/bin/ffplay.exe

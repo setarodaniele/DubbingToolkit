@@ -1,0 +1,77 @@
+﻿=== VALIDATION REPORT ===
+
+Source : D:\RecordingStudio\DubbingToolkit\Locale\Active\it.json
+Total keys : 777
+
+ISSUES FOUND:
+
+[EMPTY_PLACEHOLDER] (15)
+DUBBING_EngineSelected
+DUBBING_VoiceSelected
+DUBBING_AudioMerged
+DUBBING_BaseFolderNotFound
+DUBBING_ProjectInfoNotFound
+TTS_Azure_unsupported_format
+TTS_Azure_synthesis_error
+TTS_Azure_file_not_found
+tts_google_synthesis_completed
+tts_google_invalid_format
+tts_google_unsupported_provider
+tts_google_error_synthesis
+TTS_Google_file_not_found
+TTS_Google_synthesis_error
+TTS_Google_unsupported_format
+
+[LEADING_SPACE] (3)
+RegistaMenuOption4Disabled
+RegistaTTSDisabled
+menu_lingue_TTS_available_voices
+
+[MULTIPLE_SPACES] (23)
+EnsurePython_IntegrityOk
+EnsurePython_IntegrityFailed
+EnsurePython_InstallerExists
+InstallDependencies_AllDependenciesAlreadyInstalled
+PythonInstallerExists
+VenvValidationStart
+PkgValidationStart
+RegistaVideoNoOther
+ESTR_overwrite_prompt
+ESTR_info_bit_depth
+INFO_Transcript_lang_prob
+TRANSCR_lang_suggestion_high
+TRANSCR_lang_suggestion_good
+TRANSCR_lang_suggestion_average
+TRANSCR_lang_suggestion_low
+TRANSCR_segmented_skipped
+TRANSLATE_choose_another_srt
+TRANSLATE_info_box_compatibility
+TRANSLATE_compat_ok
+TRANSLATE_compat_not_ok
+DUBBING_WarningNoProjectInfo
+SETTINGS_FILE_CORRUPT
+Reset_Confirm2
+
+[TRAILING_SPACE] (18)
+API_chek_DubbingNotEnabled
+RegistaMenuOption4Disabled
+ESTR_overwrite_prompt
+ESTR_select_choice
+ESTR_select_index
+TRANSCR_select_audio_prompt
+TRANSCR_select_language_prompt
+TRANSCR_select_folder_prompt
+TRANSCR_SELFTEST_continue_prompt
+DUBBING_PromptSelect
+DUBBING_SelectFormat
+menu_voices_cursor
+menu_voices_filter_prompt_provider
+menu_voices_filter_prompt_gender
+TTSConfigMenu_Input_SelezionaOpzione
+FILE_SELECTOR_PromptSelect
+FILE_SELECTOR_PromptFileNumber
+BACKUP_ASK_CLEAN
+
+SUMMARY:
+  Clean        : 720
+  Problematic  : 57

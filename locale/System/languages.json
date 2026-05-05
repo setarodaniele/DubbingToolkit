@@ -1,0 +1,13 @@
+{
+    "it": "Italiano",          "it_comment": "Italian language",
+	"es": "Español",          "es_comment": "Spanish language",
+    "en": "English",           "en_comment": "English language",
+    "fr": "Fran\u00e7ais",     "fr_comment": "French language",
+    "de": "Deutsch",           "de_comment": "German language",
+    "pt": "Portugu\u00eas",    "pt_comment": "Portuguese language",
+    "ru": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439", "ru_comment": "Russian language",
+    "zh": "\u4e2d\u6587",      "zh_comment": "Chinese language",
+    "ja": "\u65e5\u672c\u8a9e", "ja_comment": "Japanese language",
+    "ko": "\ud55c\uad6d\uc5b4",  "ko_comment": "Korean language",
+    "hi": "\u0939\u093f\u0928\u094d\u0926\u0940", "hi_comment": "Hindi / Indian language"
+}

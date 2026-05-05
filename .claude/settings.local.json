@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\"Y\" | pwsh -NonInteractive -File \"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build.ps1\")",
+      "PowerShell(\"Y\" | pwsh -File \"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build.ps1\")",
+      "PowerShell(Get-ChildItem \"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build_payload\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build_payload\\\\\",\"\"\\) } | Sort-Object)",
+      "PowerShell(cmd /c \"dir /a D:\\\\RecordingStudio\\\\DubbingToolkit\\\\credentials\")",
+      "PowerShell(Get-Content *)",
+      "PowerShell([System.IO.Directory]::GetFiles\\(\"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\credentials\"\\))",
+      "PowerShell(Get-ChildItem \"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build_payload\" -Recurse | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build_payload\\\\\",\"\"\\) } | Sort-Object)",
+      "PowerShell(& \"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build.ps1\" -DryRun)",
+      "Bash(pwsh -File \"D:\\\\RecordingStudio\\\\DubbingToolkit\\\\installer\\\\build.ps1\")",
+      "Bash(\"D:/RecordingStudio/DubbingToolkit/installer/build_payload/Installation/Python311/python.exe\" -m ensurepip --version)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(pwsh *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(git check-ignore *)",
+      "Bash(git rm *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(python *)",
+      "Bash(Installation/Python311/python.exe -c ' *)",
+      "Bash(\"Installation/Python311/python.exe\" -c \"import ast; ast.parse\\(open\\('Scripts/trascrivi_audio.py', encoding='utf-8-sig'\\).read\\(\\)\\); print\\('SYNTAX OK'\\)\")",
+      "Bash(\"Installation/Python311/python.exe\" -c \"import ast; ast.parse\\(open\\('Scripts/tts_azure.py', encoding='utf-8-sig'\\).read\\(\\)\\); print\\('SYNTAX OK'\\)\")",
+      "Bash(\"Installation/Python311/python.exe\" -c \"import ast; ast.parse\\(open\\('Scripts/tts_google.py', encoding='utf-8-sig'\\).read\\(\\)\\); print\\('SYNTAX OK'\\)\")"
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+﻿==================================================
+ PLACEHOLDER REPORT
+==================================================
+
+INPUT FILE        : D:\RecordingStudio\DubbingToolkit\Locale\Active\it.json
+TOTAL KEYS        : 486
+TOTAL PLACEHOLDERS: 82
+
+------------------------------
+GLOBAL USAGE
+------------------------------
+{0} => 25
+{path} => 8
+{} => 7
+{file} => 7
+{lang} => 6
+{errore} => 6
+{model} => 3
+{old_path} => 2
+{folder_name} => 2
+{folder} => 2
+{device} => 2
+{file_path} => 1
+{size} => 1
+{1} => 1
+{error} => 1
+{limit} => 1
+{tgt} => 1
+{src} => 1
+{keys} => 1
+{detected} => 1
+{2} => 1
+{source_dir} => 1
+{manual} => 1
+
+------------------------------
+KEY MAP (sample max 30)
+------------------------------
+Launcher_RunningVenvManager => {0}
+VenvCleanup => {0}
+LanguageSelected => {0}
+TRANSCR_lang_mismatch_alert => {manual}, {detected}
+SETTINGS_LANGUAGE_UPDATED => {0}
+INFO_Audio_Traccia => {0}
+menu_lingue_TTS_error_voices_file_missing => {path}
+BACKUP_OLD_REMOVED => {old_path}
+FILE_SELECTOR_Option_FromFolder => {folder_name}
+TRANSCR_file_selected => {file}
+TRANSCR_no_audio_files_in_folder => {folder}
+TRANSCR_lang_selected_from_settings => {lang}
+TRANSLATE_completed => {file}
+TRANSLATE_info_box_target => {lang}
+TTS_Google_synthesis_error => {}, {}
+TRANSCR_loading_model => {model}
+API_chek_FileNotFound => {file_path}
+InstallingPackage => {0}, {1}, {2}
+GWL_RetrievalError => {0}
+TRANSLATE_model_load_failed => {model}
+Launcher_Python311Path => {0}
+RegistaNotFound => {0}
+VenvActivated => {0}
+RunningInstallDependencies => {0}
+InstallDependencies_ProcessingRequirements => {0}
+PackageFailed => {0}
+VenvActivating => {0}
+VenvCleanupFail => {0}
+INFO_Error_SavingJSON => {path}, {errore}
+INFO_Error_FFProbe => {path}, {errore}
+
+------------------------------
+TYPE SUMMARY
+------------------------------
+BRACE_INDEX : 3
+C_STYLE : 0
+MUSTACHE : 0

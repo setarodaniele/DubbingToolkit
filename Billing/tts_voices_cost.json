@@ -1,0 +1,54 @@
+{
+  "azure": {
+    "neural": {
+      "franchigia_gratuita": 500000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.000012555,
+      "note": "Neural voices predefinite, free tier F0 0,5M caratteri/mese"
+    },
+    "neural_hd": {
+      "franchigia_gratuita": 0,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.000012555,
+      "note": "Neural HD voices, nessuna franchigia gratuita, pay-as-you-go"
+    }
+  },
+  "google": {
+    "Standard": {
+      "franchigia_gratuita": 4000000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.000004,
+      "note": "Standard voices, gratuito fino a 4M caratteri/mese"
+    },
+    "Wavenet": {
+      "franchigia_gratuita": 4000000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.000004,
+      "note": "WaveNet voices, gratuito fino a 4M caratteri/mese"
+    },
+    "Neural2": {
+      "franchigia_gratuita": 1000000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.000016,
+      "note": "Neural2 voices, gratuito fino a 1M caratteri/mese"
+    },
+    "Studio": {
+      "franchigia_gratuita": 1000000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.00016,
+      "note": "Studio voices, gratuito fino a 1M caratteri/mese"
+    },
+    "Polyglot_preview": {
+      "franchigia_gratuita": 1000000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.000016,
+      "note": "Polyglot preview, gratuito fino a 1M caratteri/mese"
+    },
+    "Chirp3-HD": {
+      "franchigia_gratuita": 1000000,
+      "unit": "caratteri/mese",
+      "costo_oltre_franchigia": 0.00003,
+      "note": "Chirp 3 HD voices, gratuito fino a 1M caratteri/mese"
+    }
+  }
+}

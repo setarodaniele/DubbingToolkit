@@ -1,0 +1,830 @@
+RecapDubbing.txt
+Schema e funzionamento del progetto:
+
+================================================
+= SEZIONE 1 – DubbingToolkit Project Structure =
+================================================
+
+Root e file principali
+
+DubbingToolkit/
+├─ .claude/                       - Configurazioni locali e metadati per integrazione con strumenti AI (Claude).
+├─ Audio_Extracted/               - Audio estratto dai video, pronto per trascrizione.
+│  └─ <timestamp>_<nome_file>      - Sottocartelle create automaticamente per ogni estrazione.
+├─ Audio_Input/                   - File audio di partenza, importati manualmente.
+├─ Billing/                       - Documentazione amministrativa e monitoraggio costi.
+│  ├─ consumo_tts.json             - Registro del consumo TTS per ciascun progetto/voce.
+│  └─ tts_voices_cost.json         - Tariffe e costi associati alle voci TTS disponibili.
+├─ core/                          - Moduli di supporto generici e gestione interfaccia.
+│  ├─ __init__.py                  - Inizializzazione del package core.
+│  ├─ credentials_manager.py       - Gestione centralizzata delle credenziali API dei provider TTS.
+│  ├─ file_selector.py             - Gestione selezione file tramite interfaccia.
+│  ├─ input_parsing.py             - Parsing e validazione degli input.
+│  ├─ messages.py                  - Gestione centralizzata dei messaggi localizzati.
+│  ├─ ui_colors.py                 - Definizione palette colori per output in console.
+│  ├─ ui_printer.py                - Funzioni per stampare messaggi su console con formattazione.
+│  └─ utils_tts.py                 - Funzioni di utilità condivise per operazioni TTS.
+├─ credentials/                   - File di credenziali personali per accesso ai servizi TTS e modelli.*
+│  ├─ azure_speech_credentials.json
+│  ├─ azure_speech_credentials.template.json
+│  ├─ ElevenLab.json
+│  ├─ google_speech_credentials.json
+│  ├─ google_speech_credentials.template.json
+│  ├─ HuggingFace.json
+│  └─ openai_key.json
+├─ Dubbed/                        - File audio TTS generati (spezzoni e file concatenati finali).
+│  ├─ AZURE/                      - Output generato tramite provider Azure TTS.
+│  │  └─ <timestamp>_<track>_<source>_<src_lang>_<type>_<tgt_lang>
+│  └─ GOOGLE/                     - Output generato tramite provider Google TTS.
+│     └─ <timestamp>_<track>_<source>_<src_lang>_<type>_<tgt_lang>
+├─ Installation/                  - Installazioni locali di Python utilizzate dal progetto.*
+│  ├─ Python310/                  - Installazione completa di Python 3.10 in cartella personalizzata, teoricamente portabile.
+│  ├─ Python311/                  - Installazione completa di Python 3.11 in cartella personalizzata, teoricamente portabile.
+├─ installer/                     - Sistema di build e packaging del progetto per distribuzione.
+│  ├─ build_payload/              - Contenuto generato per il pacchetto finale (payload installazione).
+│  ├─ build.ps1                   - Script principale di build; crea il pacchetto del progetto secondo le regole definite.
+│  ├─ build_include.json          - Lista file/cartelle da includere nel pacchetto.
+│  ├─ build_exclude.json          - Lista file/cartelle da escludere dal pacchetto.
+│  └─ build_empty_dirs.json       - Elenco cartelle vuote da creare nel pacchetto finale.
+├─ locale/                        - File di localizzazione e gestione lingue per trascrizione e traduzione.
+│  ├─ helsinki_languages.json      - Lingue supportate dai modelli Helsinki-NLP (attualmente unico motore usato).
+│  ├─ helsinki_languages_complete.json - Elenco completo delle lingue Helsinki-NLP.
+│  ├─ supported_languages.json     - NON utilizzato al momento; previsto per futura integrazione multi-modello.
+│  ├─ translation_models_complete.json - NON utilizzato; struttura prevista per gestione futura di più modelli di traduzione.
+│  ├─ Active/                      - File JSON delle lingue attive utilizzate dal sistema (set pulito e validato).
+│  │  ├─ backup/                   - Archivio temporaneo prima di eventuale eliminazione.
+│  │  ├─ en.json                   - Inglese
+│  │  ├─ ru.json                   - Russo
+│  │  ├─ it.json                   - Italiano
+│  │  ├─ es.json                   - Spagnolo
+│  │  ├─ de.json                   - Tedesco
+│  │  ├─ pt.json                   - Portoghese
+│  │  ├─ fr.json                   - Francese
+│  │  └─ zh.json                   - Cinese
+│  └─ System/                      - File di sistema e metadati sulle lingue supportate.
+│     ├─ languages.json            - Elenco completo delle lingue concettualmente supportate dal progetto.
+│     └─ whisper_languages.json    - Elenco delle lingue effettivamente supportate dal motore Whisper.
+├─ Logs/                          - Log operativi generati dal Launcher e script principali.
+├─ Output/                        - Output finali opzionali (attualmente non utilizzato).
+├─ ps/                            - Moduli PowerShell di supporto per logging e messaggistica del runtime.
+│  ├─ Logging.psm1                - Sistema di logging con livelli INFO/WARN/ERROR basato su messaggi localizzati.
+│  └─ Messages.psm1               - Gestione messaggi per chiavi con supporto JSON/Hashtable e parametri dinamici.
+├─ Repository/                    - Risorse condivise: modelli locali, librerie, file di supporto e asset riutilizzabili.
+├─ Scripts/                                 - Script eseguibili e moduli operativi del progetto.
+│  ├─ maintenance/                           - Script di manutenzione, generazione JSON, traduzioni e utility non runtime.
+│  │  ├─ translation/                        - Pipeline per gestione, analisi, validazione e traduzione dei file di localizzazione.
+│  │  │  ├─ backup/                          - Backup temporanei dei file di traduzione durante operazioni critiche.
+│  │  │  ├─ cache/                           - Cache operativa per traduzioni e chiamate API.
+│  │  │  │  ├─ cache_debug.log               - Log dettagliato delle operazioni di caching e API.
+│  │  │  │  └─ translation_cache.json        - Cache persistente delle traduzioni per evitare richieste duplicate.
+│  │  │  ├─ output/                          - File JSON tradotti generati dalla pipeline.
+│  │  │  ├─ Report/                          - Report di analisi strutturale e placeholder per lingua.
+│  │  │  │  └─ <lang>/                       - Sottocartelle generate automaticamente per ogni lingua analizzata.
+│  │  │  │     ├─ key_report.txt             - Elenco e analisi delle chiavi presenti.
+│  │  │  │     ├─ placeholder_map.json       - Mappatura strutturata dei placeholder.
+│  │  │  │     ├─ placeholder_map.txt        - Versione leggibile della mappa placeholder.
+│  │  │  │     ├─ unused_key_clusters.txt    - Raggruppamento chiavi inutilizzate o sospette.
+│  │  │  │     └─ validate_locale_report.txt - Esito della validazione del file lingua.
+│  │  │  ├─ Temp/                            - File temporanei intermedi della pipeline.
+│  │  │  ├─ Clean-LocaleUnusedKeys.ps1       - Rimuove chiavi non utilizzate dai file di localizzazione.
+│  │  │  ├─ config.json                      - Configurazione centrale della pipeline (input, lingue, cache, output).
+│  │  │  ├─ Extract-Placeholders.ps1         - Estrae e mappa i placeholder dai file sorgente.
+│  │  │  ├─ Fix-LocaleDuplicates.ps1         - Identifica e corregge chiavi duplicate nei JSON lingua.
+│  │  │  ├─ LocaleKeyAnalyzer.ps1            - Analizza incoerenze, chiavi mancanti e struttura dei file lingua.
+│  │  │  ├─ LocaleTranslator.ps1             - Motore di traduzione con protezione placeholder e cache API.
+│  │  │  ├─ Protect-Placeholders.ps1         - Maschera e ripristina placeholder per evitare corruzione in traduzione.
+│  │  │  ├─ README.md                        - Documentazione tecnica della pipeline di traduzione.
+│  │  │  └─ Validate-LocaleJson.ps1          - Valida struttura, formattazione e integrità dei file JSON lingua.
+│  │  ├─ build_helsinki_translation_pairs.py   - Crea file JSON con lingue e coppie di traduzione Helsinki.
+│  │  ├─ build_translation_pairs.py           - Crea file JSON per lingue e coppie di traduzione multi-modello.
+│  │  ├─ GenerateWhisperLangs.py              - Genera file JSON con lingue supportate dal motore Whisper.
+│  │  └─ pulizia_debug.py                      - Rimuove file temporanei e log di debug non necessari.
+│  ├─ Temp/                                  - Script temporanei o sperimentali.
+│  ├─ __init__.py                            - Inizializzazione del package Scripts.
+│  ├─ backup_utils.py                        - Gestione backup e storico file generati.
+│  ├─ BootstrapUpdateInterfaceLang.py        - Aggiornamento lingua interfaccia tramite bootstrap.
+│  ├─ estrai_tracce.py                       - Estrazione tracce audio dai file video sorgente.
+│  ├─ info_manager.py                        - Gestione informazioni runtime e metadati di processo.
+│  ├─ InstallDependencies.ps1                - Installazione automatizzata dipendenze Python.
+│  ├─ Launcher.ps1                           - Avvio principale del progetto e orchestrazione iniziale.
+│  ├─ menu_lingue.py                         - Selezione e gestione lingue di sistema e traduzione.
+│  ├─ menu_lingue_tts.py                     - Gestione selezione lingue per pipeline TTS.
+│  ├─ menu_voices.py                         - Gestione selezione e configurazione voci TTS.
+│  ├─ monitoraggio_consumo.py                - Monitoraggio consumo API e gestione costi.
+│  ├─ Regista.py                             - Coordinatore centrale del flusso operativo (orchestratore).
+│  ├─ requirements.txt                       - Dipendenze Python principali del progetto.
+│  ├─ reset_env.ps1                          - Ripristino controllato dell’ambiente virtuale.
+│  ├─ segmentazione_avanzata.py              - Segmentazione avanzata (attualmente non implementato).
+│  ├─ settings_manager.py                    - Lettura, validazione e gestione configurazioni.
+│  ├─ SilenziaWarning.py                     - Soppressione warning non critici in fase runtime.
+│  ├─ Sottotitoli.py                         - Gestione sottotitoli finali (non ancora integrato nel flusso principale).
+│  ├─ traduci_testo.py                       - Motore di traduzione SRT basato su modelli Helsinki-NLP.
+│  ├─ trascrivi_audio.py                     - Trascrizione audio tramite Whisper / WhisperX.
+│  ├─ tts_azure.py                           - Generazione audio doppiato tramite TTS Azure.
+│  ├─ tts_config_manager.py                  - Gestione configurazioni TTS (provider, voci, parametri).
+│  ├─ tts_dubbing.py                         - Coordinamento pipeline TTS per doppiaggio.
+│  ├─ tts_google.py                          - Generazione audio doppiato tramite TTS Google.
+│  ├─ tts_menu.py                            - Interfaccia menu per gestione TTS.
+│  ├─ tts_merge.py                           - Unione e sincronizzazione segmenti audio TTS.
+│  ├─ VenvManager.ps1                        - Gestione ambienti virtuali (creazione, attivazione, controllo).
+│  └─ VoicesRepository.py                    - Genera repository audio voci TTS usando frasi di test.
+├─ Settings/                      - File di configurazione del progetto.
+│  ├─ settings.json               - Configurazione attiva.
+│  ├─ settings_default.json       - Configurazione di riferimento.
+│  └─ reset.json                  - Parametri di ripristino.
+├─ Subtitles/                     - Sottotitoli organizzati per lingua (da implementare).
+├─ Temp/                          - File temporanei (pulizia periodica consigliata).
+├─ Temp2/                         - Cartella temporanea secondaria per test o lavorazioni intermedie.
+├─ Test/                          - Script e file per test controllati.
+├─ Tools/                         - Tool locali e binari esterni necessari al progetto (es. ffmpeg).
+│  └─ ffmpeg-7.1.1-full_build/                - Build completa di ffmpeg per conversioni e manipolazioni audio/video.
+├─ Transcripts/                   - Trascrizioni grezze generate dalle tracce audio.
+│  └─ <timestamp>_<nome_file>      - Sottocartelle create automaticamente per ogni trascrizione.
+├─ Translated/                    - File SRT tradotti, organizzati per file e timestamp.
+│  └─ <timestamp>_<nome_file>      - Sottocartelle create automaticamente per ogni traduzione.
+├─ venv/                          - Virtual environment principale del progetto.
+├─ Video_Input/                   - Video sorgente.
+├─ voices/                                  - Gestione voci TTS e file di supporto.
+│  ├─ fetch_azure_voices.py                  - Script per recuperare le voci disponibili da TTS Azure.
+│  ├─ fetch_google_voices.py                 - Script per recuperare le voci disponibili da TTS Google.
+│  ├─ voices_azure.json                      - Elenco filtrato delle voci Azure disponibili.
+│  ├─ voices_azure_complete.json             - Elenco completo e dettagliato delle voci Azure.
+│  ├─ voices_generate_test_sentences.log     - Log della generazione di frasi di test per le voci.
+│  ├─ voices_generate_test_sentences.py      - Script per generare frasi di test su tutte le voci.
+│  ├─ voices_google.json                     - Elenco filtrato delle voci Google disponibili.
+│  ├─ voices_google_complete.json            - Elenco completo e dettagliato delle voci Google.
+│  ├─ voices_test_sentences.json             - Frasi di test predefinite per validare le voci TTS.
+│  └─ voices_output/                         - Repository audio generato per ogni voce.
+│     ├─ azure/
+│     │  └─ <LANG-CODE>/
+│     │     └─ <voice>.mp3
+│     └─ google/
+│        └─ <LANG-CODE>/
+│           └─ <voice>.mp3
+├─ .gitignore                     - Regole di esclusione file per versionamento Git.
+├─ CLAUDE.md                      - Documentazione e note operative per utilizzo con assistente AI Claude.
+├─ RecapDubbing.txt               - Documento strutturale e capitolato tecnico.
+└─ StartDubbing.bat               - Entry point del progetto.
+
+Note:
+---------------------
+Installation/
+La cartella Installation contiene installazioni locali complete di Python gestite dal progetto.
+Il sistema utilizza esclusivamente queste versioni come runtime, evitando dipendenze da Python installati nel sistema operativo.
+Il Launcher e VenvManager selezionano e utilizzano queste installazioni per:
+- Creare e gestire gli ambienti virtuali (venv/)
+- Garantire coerenza tra ambienti diversi
+- Rendere il progetto portabile e replicabile
+Gli ambienti virtuali vengono sempre costruiti a partire da queste installazioni locali.
+
+* Tutti i file presenti nella cartella `credentials/` contengono chiavi e credenziali personali per i servizi TTS e modelli.
+Questi file NON devono essere inclusi nel repository e devono essere gestiti localmente.
+I file `.template.json` fungono da riferimento per la struttura richiesta e devono essere utilizzati come base per la configurazione.
+
+
+=======================================
+= SEZIONE 2 – Convenzioni di progetto =
+=======================================
+
+Convenzioni e Naming
+--------------------
+
+Stato del progetto
+- Il progetto è attualmente in uno stato ibrido:
+  una parte dei moduli e delle cartelle esistenti non segue le convenzioni definite di seguito.
+- Per preservare la stabilità, il codice esistente NON viene modificato automaticamente.
+- Le convenzioni si applicano obbligatoriamente a tutti i nuovi file e moduli.
+- Un eventuale refactoring completo per allineare il codice esistente alle convenzioni verrà pianificato separatamente,
+  solo dopo la stabilizzazione della pipeline principale.
+
+Regole generali
+- Tutti i percorsi utilizzati negli script devono essere relativi alla root del progetto.
+- Nessuna stringa hardcoded nei moduli runtime:
+  tutti i messaggi devono provenire dai file JSON di localizzazione,
+  ad eccezione del bootstrap iniziale e degli script di servizio non destinati al runtime.
+- Gli script di servizio sono esclusi dal concetto di runtime applicativo e possono contenere logica tecnica non localizzata.
+- In caso di chiavi mancanti nei file JSON, i sistemi devono evidenziare il problema
+  tramite fallback esplicito (es. [MISSING: key] o equivalente).
+- Le chiavi mancanti non sono ammesse in ambiente stabile e devono essere corrette.
+- Tutti gli script devono seguire la struttura definita nella sezione "Struttura degli script".
+- I moduli non ancora allineati a questo comportamento devono essere adeguati
+  durante le attività di refactoring.
+
+Naming file e cartelle
+- Nuove cartelle: minuscolo con underscore (no spazi, no caratteri speciali)
+- Moduli Python: minuscolo con underscore (es. tts_google.py)
+- Script temporanei: prefisso obbligatorio test_
+
+Naming codice
+- Classi → CamelCase (es. TextToSpeech)
+- Funzioni e variabili → minuscolo con underscore (es. sintetizza_voce)
+
+Script e moduli
+------------------------------------------------------------
+- Script operativo → file .py eseguibile direttamente (runtime o utility)
+- Modulo → file .py importabile all’interno di altri script
+
+Stile codice
+- Riferimento generale: PEP8
+- Indentazione: 4 spazi
+- Lunghezza righe: flessibile se necessario per leggibilità operativa
+
+Struttura degli script
+------------------------------------------------------------
+- Tutti gli script del progetto devono seguire una struttura standardizzata e obbligatoria per garantire leggibilità,
+  manutenzione e coerenza tra moduli Python e PowerShell.
+
+Regole strutturali generali
+- Ogni script deve essere organizzato in blocchi numerati progressivi (1, 2, 3, ...).
+- La numerazione deve essere continua, ordinata e senza salti o duplicazioni.
+- Il numero totale dei blocchi non è vincolato: uno script può contenere un numero variabile di blocchi (5, 10, 20 o più) in base alla complessità.
+- I blocchi definiti nel template rappresentano una struttura di riferimento e non una numerazione rigida.
+- Ogni blocco principale deve avere:
+  - numero identificativo
+  - titolo descrittivo breve in inglese
+- Ogni blocco può contenere sottoblocchi numerati (es. 1.1, 1.2, 2.1).
+- Ogni sottoblocco deve includere una micro-intestazione descrittiva su singola riga.
+- Le sezioni logiche fondamentali (imports, configurazione, utilities, logica, esecuzione) devono essere sempre presenti,
+  anche se suddivise in più blocchi.
+- La numerazione dei blocchi deve essere coerente con il flusso logico dello script.
+
+Intestazione script (obbligatoria)
+- Ogni script deve iniziare con una intestazione standard conforme al template ufficiale.
+- L’intestazione deve includere:
+  - nome dello script
+  - breve descrizione funzionale (1–3 righe)
+  - input principali (se presenti)
+  - output principali (se presenti)
+  - note operative essenziali
+- L’intestazione deve essere scritta in inglese, come già indicato, e non contenere logica esecutiva.
+
+Regole di organizzazione interna
+- Imports e dipendenze devono essere isolati nel primo blocco.
+- Configurazioni e path devono essere separati in uno o più blocchi dedicati.
+- Le utility devono essere raggruppate in blocchi autonomi.
+- La logica principale deve essere separata dalla fase di esecuzione (main flow).
+- Il blocco di esecuzione principale (main) deve essere sempre posizionato alla fine dello script
+  e deve corrispondere all’ultimo blocco numerato.
+- L’ordine dei blocchi deve seguire il flusso logico dello script.
+
+Standard di funzioni
+- Ogni funzione deve includere una descrizione inline su singola riga.
+- La descrizione deve essere breve e in inglese.
+- Il formato deve essere:
+  nome_funzione – descrizione breve (one line)
+- Le funzioni devono essere logicamente raggruppate per area funzionale.
+
+Riferimento ufficiale
+- Tutti gli script devono seguire il template definito in:
+  /docs/templates/script_structure_template.txt
+- Il template script_structure_template.txt rappresenta il modello strutturale ufficiale
+  e l’implementazione canonica delle regole definite in questa sezione.
+  
+Gestione messaggistica (Python + Runtime system)
+------------------------------------------------------------
+- Tutti i messaggi di interfaccia Python devono essere gestiti tramite:
+  core/messages.py → classe Messages
+- Il sistema centralizza:
+  - caricamento lingua da settings.json (interface_lang)
+  - lettura file JSON da locale/Active/
+  - In caso di chiavi mancanti nei file JSON, il sistema utilizza fallback esplicito [MISSING: key].
+- Lo script principale e tutti i moduli runtime devono utilizzare esclusivamente questo sistema.
+- Eccezione:
+  script di bootstrap iniziale e script di servizio possono usare output non localizzato.
+
+Gestione lingue (locale)
+------------------------------------------------------------
+- La gestione delle lingue è centralizzata nella cartella locale/
+- locale/Active/
+  contiene solo lingue localizzate e attive nel sistema
+  → usate per interfaccia e runtime
+- locale/System/
+  contiene metadati e definizioni di sistema:
+  - languages.json → lingue concettualmente supportate
+  - whisper_languages.json → lingue effettivamente supportate da Whisper
+- Le lingue attive sono l’unico set valido per menu e selezione utente.
+
+Gestione messaggistica PowerShell
+------------------------------------------------------------
+- Sistema basato su moduli dedicati:
+  ps/Messages.psm1
+  ps/Logging.psm1
+- Messages.psm1:
+  - gestione messaggi tramite chiavi
+  - supporto Hashtable e JSON object
+  - interpolazione parametri
+  - fallback: "Missing key: <key>"
+- Logging.psm1:
+  - Write-Log
+  - livelli: INFO / WARN / ERROR
+  - integrazione con Get-Message
+  - output console colorato per livello
+- Il sistema PowerShell è equivalente concettualmente al sistema Python,
+  ma separato per ambiente runtime.
+- I moduli PowerShell devono utilizzare esclusivamente questo sistema.
+- I moduli legacy non ancora allineati sono considerati compatibilità temporanea.
+
+Script di test
+------------------------------------------------------------
+- Tutti gli script di test devono avere prefisso obbligatorio:
+  test_
+- Il prefisso deve essere rimosso quando lo script entra nel flusso operativo.
+- Non sono ammessi nomi alternativi.
+
+Compatibilità legacy
+------------------------------------------------------------
+- Il codice esistente che non rispetta le convenzioni viene mantenuto invariato.
+- Le nuove regole NON devono rompere la compatibilità con il codice già funzionante.
+- Il refactoring completo del codice legacy verrà pianificato separatamente,
+  solo dopo la stabilizzazione della pipeline principale.
+
+Code Documentation Rules
+------------------------------------------------------------
+- I commenti nel codice devono essere scritti in inglese.
+- Le stringhe dell’interfaccia utente devono essere gestite tramite sistema di localizzazione.
+- Durante lo sviluppo si utilizza italiano come base (locale/Active/it.json),
+  ma il codice deve rimanere documentato in inglese.
+- Le stringhe di interfaccia possono essere sviluppate in italiano come base locale,
+  ma devono essere sempre strutturate per successiva internazionalizzazione.
+- L’obiettivo è mantenere un codice internazionalmente leggibile indipendentemente dalla lingua dell’interfaccia.
+
+Gestione File di Lavoro e File Info
+------------------------------------------------------------
+- Ogni script che genera file crea una sottocartella nella directory di destinazione:
+  (Audio_Extracted/, Transcripts/, Translated/)
+  formato: <timestamp>_<nome_file_di_partenza>
+- In ogni sottocartella viene creato:
+  <nome_file_di_partenza>_info.txt
+
+- Contenuto minimo file info:
+  - File di origine (percorso completo)
+  - Data e ora creazione
+  - Numero file/tracce generate
+
+- Possibili informazioni aggiuntive:
+  - Durata
+  - Frequenza campionamento
+  - Bitrate
+  - Formato
+  - Note
+
+- I file in Video_Input/ non vengono mai modificati.
+- Tutti i file generati restano nelle sottocartelle e sono tracciati tramite file info.
+- Questa convenzione è obbligatoria per garantire tracciabilità e gestione ordinata dei dati.
+
+- Refactoring futuro previsto: valutazione di un modello “project-based”
+  in cui tutti i file (audio, trascrizioni, traduzioni) vengono raggruppati
+  in una singola cartella per progetto.
+
+- In questo modello ogni progetto avrebbe:
+  - una directory dedicata per input/output
+  - un unico file info centralizzato aggiornato durante le fasi della pipeline
+
+- L’obiettivo del refactoring è migliorare:
+  - tracciabilità end-to-end
+  - isolamento tra progetti paralleli
+  - riduzione della dispersione dei file tra directory globali
+
+- La modifica non è parte dell’implementazione attuale e verrà valutata
+  solo dopo stabilizzazione completa della pipeline corrente.
+- Questa evoluzione è classificata come refactoring architetturale futuro e non influisce sul comportamento attuale.
+
+=============================================
+= SEZIONE 3 – Stato Attuale / Funzionamento =
+=============================================
+
+- Flusso operativo principale:
+  StartDubbing.bat → Launcher.ps1 → Regista.py → pipeline TTS / trascrizione / traduzione
+- Il sistema è composto da una pipeline ibrida Python + PowerShell orchestrata dal launcher principale.
+- Le regole strutturali del codice, la messaggistica e la localizzazione sono definite nella Sezione 2.
+
+================================
+= SEZIONE 4 – Scripts Overview =
+================================
+
+ Linee guida per l’overview degli script
+-----------------------------------------
+- La sezione definisce linee guida per la documentazione e il riepilogo degli script all’interno del recap.
+- Non definisce come gli script devono essere strutturati o implementati; tali regole sono stabilite nella Sezione 2.
+- Il recapDubbing è uno strumento di supporto alla comprensione del codice e non fa parte del contratto strutturale del progetto.
+- Le linee guida non sono vincolanti, ma sono consigliate per garantire coerenza e leggibilità tra le overview degli script.
+
+- Overview script (opzionale)
+------------------------------
+- È possibile includere una overview per fornire una sintesi chiara dello scopo e del comportamento dello script.
+- È particolarmente utile per moduli core o complessi.
+- Gli script semplici o di servizio possono ometterla.
+
+- Formato consigliato (non vincolante)
+--------------------------------------
+- Nome del modulo
+- Funzione generale (descrizione breve)
+- Principali passaggi operativi (flusso di esecuzione)
+- Funzioni principali (nome + parametri in formato compatto)
+- Note aggiuntive (facoltative)
+
+
+Scripts:
+------------------------------------------------------------
+	
+StartDubbing.bat
+- Script di avvio del progetto DubbingToolkit.
+- Si posiziona automaticamente nella cartella in cui si trova (indipendentemente dal disco).
+- Controlla la presenza di PowerShell (Windows 5.1 o 7) e segnala errore se non disponibile.
+- Imposta il percorso locale di ffmpeg (Tools\ffmpeg-7.1.1-full_build\bin) e lo aggiunge temporaneamente al PATH di sistema.
+- Avvia Launcher.ps1 con policy bypass e finestra PowerShell dedicata, mantenendo la sessione aperta per eventuali controlli.
+- Lista funzioni principali:
+	nessuna funzione interna, script eseguibile batch standalone.
+- Note aggiuntive:
+	L’avvio del progetto dipende dal corretto posizionamento della cartella Tools e del file Launcher.ps1.
+	Messaggi di log informativi tramite echo direttamente in console.
+
+Launcher.ps1
+- Script di bootstrap del progetto.
+- Imposta encoding UTF-8 e code page per output corretto.
+- Gestisce la creazione dei log di avvio (Logs/), con rotazione ultimi 10 log.
+- Gestisce la selezione dinamica della lingua leggendo Locale/System/languages.json e i file lingua disponibili in Locale/Active.
+- Carica i messaggi localizzati (<lang>.json) e li usa per tutto l’output successivo.
+- Imposta la lingua selezionata come variabile d’ambiente SELECTED_LANG.
+- Verifica presenza di Python, scarica e installa se necessario.
+- Avvia e gestisce:
+  • VenvManager.ps1 (creazione/attivazione venv)
+  • InstallDependencies.ps1 (dipendenze Python)
+- Avvia Regista.py usando il Python del virtual environment.
+- Fornisce checkpoint informativi e messaggi localizzati durante tutto il flusso.
+
+VenvManager.ps1
+- Gestisce il virtual environment Python del progetto.
+- Legge la lingua dall’ambiente (SELECTED_LANG) per caricare i messaggi localizzati.
+- Verifica l’esistenza e l’integrità del venv (controllo struttura e file core).
+- Se mancante o corrotto, elimina e ricrea il virtual environment.
+- Attiva il venv nella sessione PowerShell corrente.
+- Se il venv è stato appena creato, genera il file whisper_languages.json tramite script Python dedicato.
+
+InstallDependencies.ps1
+- Gestisce l’installazione delle dipendenze Python del progetto.
+- Legge la lingua dall’ambiente (SELECTED_LANG) per caricare i messaggi localizzati.
+- Interroga i pacchetti già installati nel venv.
+- Confronta requirements.txt con le dipendenze presenti nel venv.
+- Installa solo i pacchetti mancanti tramite pip.
+- Verifica l’installazione di ogni pacchetto prima di proseguire.
+
+
+Regista.py
+- Script principale di orchestrazione del progetto.
+- Legge la lingua dall’ambiente (SELECTED_LANG) e carica i messaggi localizzati (fallback su inglese).
+- Gestisce il menu principale e il flusso di lavoro, inclusi: estrazione tracce, trascrizione, traduzione, doppiaggio e gestione sottotitoli.
+- Gestisce le impostazioni iniziali e il file reset.json per rilevare il primo avvio e applicare le configurazioni di default.
+- Seleziona il motore TTS e coordina l’esecuzione dei moduli Python collegati.
+- Fornisce messaggi localizzati e logica interattiva all’utente tramite console.
+
+estrai_tracce.py
+- Script per l’estrazione delle tracce audio dai file video
+- Permette di selezionare il video da cartella Video_Input o tramite browse manuale
+- Conta automaticamente il numero di tracce audio presenti nel video
+- Crea una cartella timestampata in Audio_Extracted per salvare le tracce
+- Estrae le tracce audio in formato WAV mantenendo codec, sample rate e canali originali
+- Genera un file di riferimento .info, nome formato <video_name>_info.txt, contenente: file video di origine, cartella estrazione, data estrazione, numero di tracce, dimensione totale, nome traccia, durata, dimensione, formato, sample rate, canali, profondità bit, codec
+- Gestisce errori e avvisi con messaggi localizzati tramite file JSON
+- Aggiorna lo storico estrazioni usando manage_history
+- Può essere eseguito stand-alone per test rapido caricando i messaggi localizzati
+
+trascrivi_audio.py
+- Script per la trascrizione automatica delle tracce audio estratte.
+- Permette di selezionare il file audio da Audio_Extracted o tramite browse manuale.
+- Richiede conferma all’utente prima di avviare la trascrizione, con default “Sì” se si preme Enter senza inserire nulla.
+- Determina automaticamente il dispositivo di elaborazione disponibile: GPU NVIDIA con CUDA o CPU; supporto a schede AMD non testato.
+- Utilizza Whisper (modello selezionabile: tiny, base, small, medium, large) per generare la trascrizione; rileva automaticamente la lingua parlata e la indica nei file info.
+- Confronta lingua rilevata e lingua impostata nelle impostazioni, avvisando l’utente in caso di discrepanza e chiedendo conferma per procedere.
+- Crea una cartella timestampata nella sottocartella corrispondente a Transcripts/ per salvare i file generati.
+- Genera i seguenti file SRT:
+	<audio_name>_<lang>_raw.srt → trascrizione raw direttamente da Whisper
+	<audio_name>_<lang>_seg.srt → trascrizione segmentata opzionale basata sulle pause
+	<audio_name>_<lang>_work.srt → file per editing manuale (copia di seg o raw)
+Genera un file info tramite InfoManager (<audio_name>_info.txt) con contenuto minimo:
+	File audio di origine
+	Cartella di destinazione
+	Data/ora creazione
+	Lingua parlata in forma leggibile (es. “italiano”)
+	Modello Whisper usato
+	Dispositivo utilizzato (CPU o GPU)
+	File SRT generati (raw, seg, work)
+	Numero di segmenti trascritti
+	Durata audio in secondi
+	Stato segmentazione abilitata o disabilitata
+- Gestisce eventuali errori e avvisi durante la trascrizione con messaggi localizzati tramite JSON.
+- Mantiene uno storico delle trascrizioni tramite manage_history.
+- Può essere eseguito stand-alone per test rapido caricando i messaggi localizzati.
+
+backup_utils.py
+- Script per la gestione e manutenzione dei backup di progetto.
+- Controlla l’esistenza della cartella di lavoro e segnala errori se mancante.
+- Lista tutte le sottocartelle presenti e segnala se non ci sono backup disponibili.
+- Raggruppa le cartelle per lingua in base al nome della cartella.
+- Applica il limite massimo di backup per lingua, eliminando i più vecchi (opzione cestino o cancellazione definitiva).
+- Applica il limite totale di backup, rimuovendo le cartelle più vecchie fino a rispettare il numero massimo consentito.
+- Se impostato, verifica la dimensione totale dei backup e segnala un warning se supera il limite configurato.
+- In caso di superamento dimensione, chiede all’utente se procedere con la pulizia.
+- Permette all’utente di scegliere il metodo di cancellazione (cestino o definitivo) per liberare spazio.
+- Rimuove le cartelle più vecchie fino a rientrare nel limite di dimensione, aggiornando in tempo reale il calcolo della dimensione.
+-Tutte le operazioni di rimozione o errori vengono loggate con messaggi colorati tramite i file JSON dei messaggi.
+
+settings_manager.py
+- Gestisce la lettura, modifica e reset delle impostazioni del progetto.
+- Mostra un menu interattivo con opzioni per modificare le impostazioni, soft reset, cambio lingua e hard reset.
+- Permette di modificare il numero massimo di backup totali e per lingua.
+- Permette di modificare la dimensione massima delle cartelle di backup in GB.
+- Permette di attivare o disattivare le conferme e l’uso del cestino per la cancellazione dei backup.
+- Salva le impostazioni aggiornate nel file settings.json.
+- Gestisce la selezione della lingua dell’interfaccia mostrando le lingue disponibili e salvando la scelta.
+- Aggiorna i messaggi dell’interfaccia in base alla lingua selezionata.
+- Consente di ripristinare le impostazioni di default tramite soft reset.
+- Consente di eseguire un hard reset impostando flag di reset e lanciando lo script reset_env.ps1.
+- Gestisce conferme multiple per evitare reset accidentali.
+- Fornisce messaggi di conferma o errore in console con output colorato.
+
+monitoraggio_consumo.py
+Modulo per monitorare e gestire il consumo dei caratteri TTS per i vari motori (Google, Azure, ElevenLabs).
+Lista delle funzioni principali:
+get_mese_precedente(mese_str: stringa AAAA-MM, passi: numero di mesi da sottrarre)
+ConsumoTTS.init(franchigia: numero di caratteri gratuiti, prezzo_per_1k_char: costo per 1000 caratteri extra, motore: stringa nome motore)
+ConsumoTTS.carica()
+ConsumoTTS.salva()
+ConsumoTTS.aggiungi_caratteri(n: numero di caratteri da aggiungere)
+ConsumoTTS.percentuale_consumo()
+ConsumoTTS.costo_stimato()
+ConsumoTTS.report_sintesi()
+ConsumoTTS.report_completo()
+ConsumoTTS.pulisci_mesi_vecchi()
+ConsumoTTS.stampa_storico()
+Note aggiuntive:
+Thread-safe grazie a json_lock per aggiornamenti concorrenti del file JSON.
+Mantiene storico di tre mesi per ogni motore, elimina dati più vecchi.
+Output di debug compatto per monitoraggio aggiornamenti.
+File di dati salvato in Billing/consumo_tts.json.
+
+credentials_manager.py
+Gestione centralizzata lettura credenziali provider
+Lista delle funzioni principali:
+load_credentials(json_path: percorso file JSON, required_keys: lista chiavi obbligatorie)
+get_provider_credentials(provider_name: nome provider supportato, es. "azure" o "google")
+Note aggiuntive:
+Carica le credenziali dai file JSON nella cartella credentials/ della root progetto
+Verifica la presenza di tutte le chiavi obbligatorie, altrimenti solleva eccezioni
+Supporta provider predefiniti: Azure e Google, facilmente estendibile ad altri provider
+
+VoicesRepository.py
+- Script di generazione del repository audio delle voci TTS.
+- Utilizza le liste filtrate voices_azure.json e voices_google.json.
+- Usa frasi di test definite in voices_test_sentences.json.
+- Genera un file audio per ogni voce disponibile.
+- Organizza gli output per provider e lingua nella cartella voices_output.
+- Registra log di sintesi e monitora il consumo caratteri TTS.
+- Salta automaticamente le voci già generate per evitare duplicazioni.
+- Può essere rieseguito in modo incrementale per completare il repository.
+
+info_manager.py
+- Classe InfoManager per gestione sicura di JSON e file info leggibili per ogni progetto.
+- Inizializza struttura JSON di default con sezioni: progetto, video_file, audio_tracce, trascrizione, traduzioni, TTS.
+- Supporta ereditarietà automatica dai JSON di fase precedente per evitare di perdere dati già presenti.
+Funzionalità principali:
+- Caricamento e salvataggio JSON (`save_json`) con aggiornamento timestamp ultima modifica.
+- Aggiornamento sezione progetto (`update_project`) con impostazioni e lingue da settings.
+- Aggiornamento file video (`update_video_file`) e analisi opzionale con ffprobe.
+- Aggiunta tracce audio (`add_audio_track`) con rilevamento proprietà WAV o tramite mutagen/ffprobe per altri formati.
+- Trascrizione (`update_trascrizione`) con salvataggio info su:
+    - File audio di origine
+    - Lingua selezionata e lingua rilevata
+    - Probabilità rilevamento lingua
+    - Durata audio
+    - Modello Whisper e dispositivo usato
+    - Stato segmentazione (abilitata/disabilitata)
+    - File SRT generati (raw, segmented, work)
+    - Numero di blocchi e caratteri totali per ciascun SRT
+- Generazione file info leggibile (`generate_info_file`) con formattazione:
+    - Sezioni: Progetto, Video, Audio, Trascrizione, Traduzioni, TTS
+    - Lingue convertite in formato leggibile (es. "italiano (it)")
+- Aggiornamento TTS (`update_tts`) con caratteri usati, franchigia e costo stimato.
+- Analisi video con ffprobe (`analyze_video`) per codec, durata, frame rate e risoluzione.
+- Aggiornamento numero tracce audio in video_file (`set_audio_track_count`).
+- Aggiornamento o creazione di sezioni arbitrary del JSON con merge opzionale (`update_section_with_merge`).
+- Analisi dei file SRT (`analizza_file_srt`) per numero di blocchi e totale caratteri.
+- Gestione sicura dell’ereditarietà dai JSON precedenti (`_inherit_previous`) senza sovrascrivere la sezione corrente.
+- Logging degli errori e warning per caricamento, salvataggio e analisi file.
+Uso tipico:
+- Utilizzato dagli script di trascrizione e doppiaggio ecc per aggiornare automaticamente info e JSON di progetto.
+- Permette una visione centralizzata e leggibile dello stato di progetto e delle risorse multimediali.
+
+tts_azure.py
+- Modulo standalone per sintesi vocale tramite Azure TTS; riceve testo e parametri voce, restituisce file audio generati.
+- Crea client SpeechConfig, legge credenziali centralizzate, sintetizza file audio SRT in batch direttamente nello script.
+- Lista funzioni principali:
+	crea_speech_config(azure_key: chiave Azure, azure_region: regione Azure, voice_name: nome voce, output_format: mp3 o wav)
+	sintetizza_azure_batch(entries: lista di tuple (filename, testo, start, end), output_dir: cartella destinazione, speech_config: oggetto SpeechConfig, output_format: mp3 o wav)
+- Note aggiuntive:
+	- Credenziali gestite tramite core.credentials_manager
+	- Messaggi centralizzati tramite core.messages.Messages
+	- Funziona sia come modulo importabile sia come script CLI standalone
+
+tts_google.py
+- Modulo standalone per sintesi vocale tramite Google TTS; riceve testo e parametri voce, restituisce file audio generati.
+- Gestisce tutto internamente, senza richiamare funzioni esterne di batch; parsing SRT incluso nello script.
+- Lista funzioni principali:
+	crea_client_google(google_creds: credenziali JSON)
+	sintetizza_google_batch(entries: lista di tuple (filename, testo, start, end), output_dir: cartella destinazione, client: oggetto Google TTS, voice_name: nome voce, output_format: mp3 o wav)
+	parse_srt(file_path: percorso file SRT)
+- Note aggiuntive:
+	- Credenziali gestite centralmente tramite core.credentials_manager
+	- Messaggi e testi di interfaccia centralizzati tramite core.messages.Messages
+	- Funziona sia come modulo importabile sia come script standalone CLI
+	- Tutta la logica batch ora è interna, non dipende da script esterni
+
+utils_tts.py
+- Modulo di funzioni generiche per supporto TTS, gestione file e parsing SRT.
+- Lista funzioni principali:
+	parse_srt(file_path: str) -> list[tuple]
+		- Legge un file SRT e restituisce una lista di tuple (filename, testo, start_time, end_time)
+		- Il filename è generato come "HH-MM-SS-ms_HH-MM-SS-ms" corrispondente a inizio e fine frase
+		- Divide i blocchi SRT separati da righe vuote e estrae timestamp e testo
+	genera_nome_file(timestamp: str, estensione: str = "wav") -> str
+		- Genera il nome del file audio a partire dal timestamp
+		- Restituisce stringa tipo "HH-MM-SS-ms_HH-MM-SS-ms.wav"
+	assicurati_cartella(path: str) -> str
+		- Controlla se la cartella esiste; se no, la crea
+		- Restituisce il percorso della cartella
+- Note aggiuntive:
+	- Nessuna dipendenza da funzioni di sintesi esterne
+	- Tutte le funzioni sono standalone e facilmente integrabili in script TTS specifici
+	- La funzione `sintetizza_batch` è presente solo come commento e non viene utilizzata
+
+ps/Logging.psm1
+- Sistema di logging centralizzato per tutto il progetto.
+- Espone la funzione Write-Log con livelli INFO, WARN e ERROR.
+- Utilizza il modulo Messages.psm1 per risolvere le chiavi in testo localizzato.
+- Supporta parametri dinamici per messaggi formattati.
+- Output su console con colorazione in base al livello.
+
+ps/Messages.psm1
+- Sistema di gestione messaggi basato su chiavi.
+- Supporta input da Hashtable o oggetti JSON.
+- Permette recupero sicuro dei messaggi con fallback su “Missing key”.
+- Supporta interpolazione parametri tramite formato -f.
+- Espone le funzioni Set-Messages e Get-Message per uso esterno.
+
+
+	
+================== Analisi PROGETTO TTS DUBBING ==================
+
+1. tts_dubbing.py
+   - Orchestratore principale per TTS batch.
+   - Input: file SRT + config (provider, voce, lingua, formato).
+   - Gestisce:
+     • Selezione provider (Google/Azure)
+     • Sintesi vocale batch (chiama rispettivamente tts_google/tts_azure)
+     • Calcolo consumo caratteri (ConsumoTTS)
+     • Merge file audio (tts_merge)
+   - Output: file unico audio nella cartella Dubbed/<Provider>/<file_stem>.
+
+2. monitoraggio_consumo.py
+   - Classe ConsumoTTS: gestisce storico consumo caratteri TTS.
+   - Tiene traccia di franchigia, costo stimato, percentuali.
+   - Lock per scrittura sicura su JSON multithread.
+   - Funzioni utili: carica, salva, aggiungi_caratteri, report_sintesi, report_completo, stampa_storico, pulisci_mesi_vecchi.
+
+3. tts_merge.py
+   - Funzione merge_audio_files: concatena file audio generati in un unico file.
+   - Supporta formati wav e mp3.
+   - CLI standalone per unire file da cartella input.
+
+4. tts_config_manager.py
+   - Gestione config TTS e stato corrente (file, lingua, provider, voce, output_format).
+   - Funzioni:
+     • aggiorna_file_srt() → seleziona nuovo file SRT, resetta config
+     • aggiorna_lingua() → legge da project_info.json o menu manuale
+     • aggiorna_motore_tts() → selezione provider (Google/Azure)
+     • aggiorna_voce() → seleziona voce disponibile
+     • aggiorna_formato_output() → seleziona mp3/wav
+
+5. core/utils_tts.py
+   - Funzioni generiche TTS:
+     • parse_srt(file) → lista blocchi (filename, testo, start_time, end_time)
+     • genera_nome_file(timestamp, estensione)
+     • assicurati_cartella(path)
+     • count_characters(file) → numero totale caratteri
+   - (opzionale) sintetizza_batch generica per provider
+
+6. tts_google.py
+   - Sintesi vocale batch con Google TTS.
+   - Parsing SRT interno, creazione client Google.
+   - Ciclo su entry: genera file output, chiama client.synthesize_speech.
+   - Supporta output mp3/wav.
+   - CLI standalone disponibile.
+
+7. tts_azure.py
+   - Sintesi vocale batch con Azure TTS.
+   - Parsing SRT interno, creazione SpeechConfig con voce e formato.
+   - Ciclo su entry SRT: genera file output, chiama SpeechSynthesizer.speak_text_async.
+   - Supporta output mp3/wav.
+   - CLI standalone disponibile.
+
+================== FLUSSO LAVORO ==================
+1. Selezione file SRT → tts_config_manager
+2. Configurazione lingua, provider, voce, output → tts_config_manager
+3. Chiamata tts_dubbing(config):
+   • Calcolo caratteri → ConsumoTTS
+   • Sintesi batch → tts_google/tts_azure
+   • Merge file → tts_merge
+4. Storico consumo → monitoraggio_consumo.py
+5. Output finale → file unico audio in Dubbed/<Provider>/<SRT_name>.<formato>
+
+	
+================================
+=    SEZIONE 5 TO-DO LIST      =
+================================
+
+Nota generale
+- I punti elencati in questa sezione rappresentano attività, miglioramenti e refactoring pianificati.
+- Alcuni elementi potrebbero risultare già implementati o parzialmente integrati nel codice attuale.
+- Ogni voce deve essere verificata durante lo sviluppo e mantenuta, modificata o rimossa in base allo stato reale del progetto.
+
+--- Refactoring struttura JSON progetto
+- Attualmente ogni fase della pipeline (estrazione audio, trascrizione, traduzione, TTS) utilizza o aggiorna JSON separati, con duplicazione dei dati e gestione distribuita dello stato.
+- Obiettivo futuro: centralizzare il project_info.json nella root del progetto, permettendo aggiornamenti modulari per sezione senza duplicazioni.
+- Benefici: riduzione ridondanza, maggiore coerenza dei dati, semplificazione di InfoManager e gestione percorsi tramite project_root unico.
+
+--- Controllo avanzato della lingua (Whisper)
+- Attualmente la lingua viene rilevata automaticamente da Whisper senza vincoli o validazione della confidenza.
+- Obiettivo futuro: analizzare l’output di rilevazione lingua e introdurre logica di valutazione qualità.
+- In caso di bassa confidenza o incoerenza: segnalazione all’utente.
+- Eventuale modalità avanzata per forzare lingua con warning esplicito.
+- Scopo: usare la detection lingua anche come indicatore di qualità dell’audio.
+
+--- Implementazione post-processing testo (Traduzione → TTS)
+- Pipeline di normalizzazione testo tra traduzione e sintesi vocale.
+- Include:
+- pulizia spazi e punteggiatura
+- normalizzazione frasi per TTS
+- eventuale riscrittura tramite AI per ottimizzazione parlato
+- Obiettivo: migliorare naturalezza e qualità dell’audio generato.
+
+--- Ottimizzazione gestione memoria trascrizione
+- Attualmente i file audio vengono caricati completamente in memoria durante la trascrizione.
+- Questo può creare problemi su sistemi con RAM limitata.
+- Migliorie future:
+- streaming audio
+- elaborazione a blocchi
+- liberazione memoria per segmento
+- uso modelli più leggeri su hardware limitato
+
+--- Segmentazione avanzata (Whisper + analisi semantica)
+- Attualmente il sistema segmenta e trascrive senza analisi approfondite del contenuto.
+- Sviluppi futuri:
+- confronto tra RAW e segmentato per errori o omissioni
+- rilevamento silenzi e rumore
+- analisi qualità semantica dei segmenti
+- correzione automatica frasi spezzate o troppo lunghe
+- miglioramento allineamento audio-testo
+
+--- Inserimento durata effettiva trascrizione nel file info
+- Registrare il tempo reale di elaborazione Whisper per ogni audio.
+- Utilità:
+- confronto prestazioni tra modelli
+- analisi performance pipeline
+- ottimizzazione futura dei parametri
+
+--- Integrazione WhisperX (futuro)
+- Possibile integrazione per:
+- segmentazione avanzata
+- alignment migliorato
+- gestione audio più precisa
+- Deve rimanere opzionale e non rompere il flusso base.
+
+--- Monitor avanzamento installazione e dimensione cartelle
+- Interfaccia PowerShell per mostrare progressi installazione e crescita cartelle in tempo reale.
+- Possibile timeout automatico a fine installazione venv.
+- Tutti i messaggi devono essere localizzati via JSON.
+
+--- Traduzione indiretta con lingua pivot (inglese)
+- Supporto traduzione tra lingue non direttamente compatibili.
+- Uso dell’inglese come lingua intermedia.
+- Attivazione automatica solo se coppia diretta non disponibile.
+- Basato su helsinki_languages.json.
+
+--- Centralizzazione gestione lingue in settings_manager
+- Rendere settings_manager fonte unica per lingua di trascrizione e traduzione.
+- Consentire override per singoli moduli.
+- Ridurre duplicazione logica tra script.
+
+--- Verifica lingua sorgente automatica
+- Lettura lingua rilevata da file _info.txt.
+- Confronto con lingua selezionata.
+- Avviso in caso di mismatch tra lingua attesa e reale.
+
+--- Backup per lingua (Translated)
+- Modifica gestione backup per applicare limite per coppia linguistica.
+- Non più limite globale ma per combinazione lingua origine/destinazione.
+
+--- Ottimizzazione consumo TTS per engine
+- Separazione più chiara del consumo caratteri per singolo motore.
+- Necessario per analisi costo per provider.
+

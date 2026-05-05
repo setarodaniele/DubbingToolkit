@@ -1,0 +1,12 @@
+# ui_colors.py
+from colorama import Fore
+
+COLOR_INFO = Fore.WHITE
+COLOR_WARNING = Fore.YELLOW
+COLOR_ERROR = Fore.RED
+COLOR_SUCCESS = Fore.GREEN
+COLOR_FRAME = Fore.CYAN
+COLOR_MENU = Fore.CYAN
+COLOR_INPUT = Fore.YELLOW
+BOX_SEPARATOR = "-" * 28
+

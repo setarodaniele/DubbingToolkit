@@ -1,0 +1,21 @@
+{
+    "version": "0.1",
+    "interface_lang": "it",
+    "model": "small",
+    "output_transcripts": "Transcripts",
+    "output_dubbed": "Dubbed",
+    "voice": null,
+    "show_confirmations": true,
+    "max_backups": 10,
+    "max_backups_per_language": 10,
+    "max_folders_size_gb": 5,
+	"use_trash": false,
+	"MIN_SILENCE_LEN_MS": 12000,
+	"SILENCE_THRESH_DBFS": -30,
+	"KEEP_SILENCE_MS": 150,
+	"Transcript_Audio_Spoken_Lang": "it",
+	"Transcript_Target_Lang": "it",
+	"Translation_Source_Lang": "it",
+	"Translation_Target_Lang": "en",
+	"Dubbing_Lang": "en"
+}

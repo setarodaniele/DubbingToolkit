@@ -1,0 +1,11 @@
+[
+  "nppBackup",
+  "\\backup\\",
+  "\\installer\\",
+  "\\Temp\\",
+  "\\Temp2\\",
+  "\\Repository\\",
+  "Installation\\Python310",
+  "Scripts\\Path",
+  "*.log"
+]
