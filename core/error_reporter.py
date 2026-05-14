@@ -27,7 +27,7 @@ _PROJECT_ROOT = Path(__file__).parent.parent
 _LOGS_DIR     = _PROJECT_ROOT / "Logs"
 
 # ── Developer contact ─────────────────────────────────────
-DEVELOPER_EMAIL = "sedano132g@gmail.com"
+DEVELOPER_EMAIL = "SmallSoftwareHouse@gmail.com"
 APP_NAME        = "DubbingToolkit"
 
 # ── Report settings ───────────────────────────────────────
