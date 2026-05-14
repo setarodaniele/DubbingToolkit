@@ -341,21 +341,33 @@ if (Test-Path $LockFile) {
         Stop-Transcript -ErrorAction SilentlyContinue | Out-Null
         exit 1
     }
-    # Read exit_reason before removing the lock
-    $wasCleanExit = $false
+    # Check if last session was a voluntary close by reading the most
+    # recent session log — more reliable than writing to the lock file
+    # because the log is written by Python's own close handler before
+    # the process terminates, independently of PowerShell's lifecycle.
+    $wasVoluntaryClose = $false
     try {
-        $staleLockData = Get-Content $LockFile -Encoding UTF8 -Raw | ConvertFrom-Json
-        $cleanProp = $staleLockData.PSObject.Properties['clean_exit']
-        if ($cleanProp -and $cleanProp.Value -eq $true) { $wasCleanExit = $true }
+        $logsDir   = Join-Path $RootFolder "Logs"
+        $recentLog = Get-ChildItem -Path $logsDir -Filter "*_session*.json" -ErrorAction SilentlyContinue |
+                     Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if ($recentLog) {
+            $logData = Get-Content $recentLog.FullName -Encoding UTF8 -Raw |
+                       ConvertFrom-Json -ErrorAction SilentlyContinue
+            $reasonProp = $logData.PSObject.Properties['exit_reason']
+            $reason = if ($reasonProp) { $reasonProp.Value } else { $null }
+            if ($reason -eq 'window_closed' -or $reason -eq 'normal') {
+                $wasVoluntaryClose = $true
+            }
+        }
     } catch {}
 
     Remove-Item $LockFile -Force -ErrorAction SilentlyContinue
 
-    if (-not $wasCleanExit) {
+    if (-not $wasVoluntaryClose) {
         # Lock left by a real crash or forced kill — warn the user
         Write-Host $Messages.Launcher_StaleLockRemoved -ForegroundColor Yellow
     }
-    # clean_exit (X button, Ctrl+C): silent — no warning needed
+    # Voluntary close (X button, Ctrl+C, menu exit): silent
 }
 
 $currentProc = Get-Process -Id $PID -ErrorAction SilentlyContinue
