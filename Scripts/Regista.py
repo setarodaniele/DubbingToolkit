@@ -737,11 +737,29 @@ def main(messages):
 # =========================================================
 # Windows console close handler (X button / logoff / shutdown)
 # =========================================================
+def _mark_lock_clean_exit(reason: str):
+    """
+    Write exit_reason + clean_exit:true into the runtime lock file.
+    Called before any voluntary close so the Launcher knows not to
+    show a crash warning on next startup.
+    """
+    try:
+        lock_path = Path(__file__).parent.parent / "Workspace" / "runtime.lock"
+        if lock_path.exists():
+            import json as _json
+            data = _json.loads(lock_path.read_text(encoding="utf-8"))
+            data["exit_reason"] = reason
+            data["clean_exit"]  = True
+            lock_path.write_text(_json.dumps(data), encoding="utf-8")
+    except Exception:
+        pass
+
+
 def _register_console_close_handler():
     """
     Register a Windows console control handler so that closing the window
-    with X (or system logoff/shutdown) triggers a clean session close and
-    creates a silent ZIP report before the process is terminated.
+    with X (or system logoff/shutdown) marks the lock as clean before
+    the process is terminated — suppressing the crash warning on next start.
     Does nothing on non-Windows platforms.
     """
     import sys
@@ -759,8 +777,9 @@ def _register_console_close_handler():
 
         def _handler(ctrl_type):
             if ctrl_type in (CTRL_CLOSE_EVENT, CTRL_LOGOFF_EVENT, CTRL_SHUTDOWN_EVENT):
-                # Voluntary close: just record the reason, no ZIP needed
+                # Voluntary close with X: close session and mark lock as clean
                 logger.close_session(exit_reason="window_closed")
+                _mark_lock_clean_exit("window_closed")
             return False  # let Windows proceed with default termination
 
         # Keep a reference so the callback isn't garbage-collected

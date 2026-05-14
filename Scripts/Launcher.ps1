@@ -341,8 +341,18 @@ if (Test-Path $LockFile) {
         Stop-Transcript -ErrorAction SilentlyContinue | Out-Null
         exit 1
     }
+    # Read exit_reason before removing the lock
+    $staleLockData = $null
+    try { $staleLockData = Get-Content $LockFile -Encoding UTF8 -Raw | ConvertFrom-Json } catch {}
+    $wasCleanExit = ($staleLockData -and $staleLockData.clean_exit -eq $true)
+
     Remove-Item $LockFile -Force -ErrorAction SilentlyContinue
-    Write-Host $Messages.Launcher_StaleLockRemoved -ForegroundColor Yellow
+
+    if (-not $wasCleanExit) {
+        # Lock left by a real crash or forced kill — warn the user
+        Write-Host $Messages.Launcher_StaleLockRemoved -ForegroundColor Yellow
+    }
+    # clean_exit (X button, Ctrl+C): silent — no warning needed
 }
 
 $currentProc = Get-Process -Id $PID -ErrorAction SilentlyContinue
