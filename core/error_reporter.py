@@ -229,7 +229,7 @@ def _build_zip(sessions_paths: list[Path], report_text: str) -> Path:
     Returns the ZIP path.
     """
     ts  = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
-    zip_path = _LOGS_DIR / f"error_report_{ts}.zip"
+    zip_path = _LOGS_DIR / f"DubbingToolkit_error_report_{ts}.zip"
 
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("error_report.txt", report_text)
@@ -273,6 +273,36 @@ def _open_mailto(subject: str, body: str):
 # =========================================================
 # Public API
 # =========================================================
+
+def create_silent_exit_report(logger_instance) -> Optional[Path]:
+    """
+    Create a ZIP report silently — no email, no Explorer, no user input.
+    Called automatically when the console window is closed with X or on crash.
+    Returns the ZIP path on success, None on failure.
+    Fast: designed to complete within the ~5-second Windows shutdown window.
+    """
+    try:
+        current_path = logger_instance._log_path
+        current_sess = _load_session(current_path)
+        if current_sess is None:
+            return None
+
+        paths_for_zip = [current_path]
+        sessions_for_report = [current_sess]
+
+        past_paths = _get_recent_session_paths(current_path, MAX_PAST_SESSIONS)
+        for pp in past_paths:
+            ps = _load_session(pp)
+            if ps:
+                sessions_for_report.append(ps)
+                paths_for_zip.append(pp)
+
+        report_text = _build_report_text(sessions_for_report)
+        zip_path = _build_zip(paths_for_zip, report_text)
+        return zip_path
+    except Exception:
+        return None
+
 
 def has_errors(logger_instance) -> bool:
     """Quick check: did the current session log any ERROR-level events?"""

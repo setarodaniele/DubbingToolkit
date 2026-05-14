@@ -25,7 +25,7 @@ from settings_manager import default_setting
 from core.logger import logger
 from core.update_checker import check_for_updates
 from core.input_parsing import is_yes
-from core.error_reporter import send_error_report, has_errors
+from core.error_reporter import send_error_report, has_errors, create_silent_exit_report
 from info_manager import InfoManager
 
 
@@ -734,7 +734,48 @@ def main(messages):
 # =========================================================
 # Entry point - Load messages and start main loop
 # =========================================================
+# =========================================================
+# Windows console close handler (X button / logoff / shutdown)
+# =========================================================
+def _register_console_close_handler():
+    """
+    Register a Windows console control handler so that closing the window
+    with X (or system logoff/shutdown) triggers a clean session close and
+    creates a silent ZIP report before the process is terminated.
+    Does nothing on non-Windows platforms.
+    """
+    import sys
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+        import ctypes.wintypes
+
+        CTRL_CLOSE_EVENT    = 2
+        CTRL_LOGOFF_EVENT   = 5
+        CTRL_SHUTDOWN_EVENT = 6
+
+        HandlerRoutine = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.wintypes.DWORD)
+
+        def _handler(ctrl_type):
+            if ctrl_type in (CTRL_CLOSE_EVENT, CTRL_LOGOFF_EVENT, CTRL_SHUTDOWN_EVENT):
+                # Close session as window-closed (writes session_end + exit_reason)
+                logger.close_session(exit_reason="window_closed")
+                # Create ZIP silently — no user interaction needed/possible
+                create_silent_exit_report(logger)
+            return False  # let Windows proceed with default termination
+
+        # Keep a reference so the callback isn't garbage-collected
+        _register_console_close_handler._ctypes_handler = HandlerRoutine(_handler)
+        ctypes.windll.kernel32.SetConsoleCtrlHandler(
+            _register_console_close_handler._ctypes_handler, True
+        )
+    except Exception:
+        pass  # non-critical — app still works without it
+
+
 if __name__ == "__main__":
+    _register_console_close_handler()
     messages = Messages()
     try:
         main(messages)

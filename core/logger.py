@@ -181,11 +181,12 @@ class _Logger:
             context=context, correlation_id=correlation_id,
         ))
 
-    def close_session(self):
+    def close_session(self, exit_reason: str = "normal"):
         with self._lock:
             end = datetime.now(timezone.utc)
             dur = round((end - self._session_start).total_seconds() / 60, 2)
             self._header["session_end"] = end.isoformat(timespec="milliseconds")
+            self._header["exit_reason"] = exit_reason
             self._header["summary"] = {
                 "operations_completed": self._ops_completed,
                 "warnings": self._warnings,
