@@ -759,10 +759,8 @@ def _register_console_close_handler():
 
         def _handler(ctrl_type):
             if ctrl_type in (CTRL_CLOSE_EVENT, CTRL_LOGOFF_EVENT, CTRL_SHUTDOWN_EVENT):
-                # Close session as window-closed (writes session_end + exit_reason)
+                # Voluntary close: just record the reason, no ZIP needed
                 logger.close_session(exit_reason="window_closed")
-                # Create ZIP silently — no user interaction needed/possible
-                create_silent_exit_report(logger)
             return False  # let Windows proceed with default termination
 
         # Keep a reference so the callback isn't garbage-collected
@@ -777,8 +775,29 @@ def _register_console_close_handler():
 if __name__ == "__main__":
     _register_console_close_handler()
     messages = Messages()
+    _crashed = False
     try:
         main(messages)
+    except KeyboardInterrupt:
+        # Ctrl+C — voluntary, not a crash
+        _crashed = False
+    except Exception as _exc:
+        # Unhandled exception — real crash
+        _crashed = True
+        import traceback as _traceback
+        logger.error(
+            "Regista", "main",
+            f"Unhandled exception: {type(_exc).__name__}: {_exc}",
+            error_code="UNHANDLED_EXCEPTION",
+            error_category="crash",
+            is_retryable=False,
+            traceback=_traceback.format_exc(),
+        )
+        raise
     finally:
-        logger.close_session()
+        if _crashed:
+            logger.close_session(exit_reason="crash")
+            create_silent_exit_report(logger)
+        else:
+            logger.close_session(exit_reason="normal")
 
