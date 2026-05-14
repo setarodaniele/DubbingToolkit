@@ -373,25 +373,34 @@ def gestione_progetti(messages, ws, settings=None):
     while True:
         projects = WorkspaceManager.list_projects()
 
-        print("\n" + Fore.CYAN + "-"*38)
-        print(getattr(messages, "ProgettiTitle", "Project Management"))
+        print("\n" + Fore.CYAN + "="*38)
+        print(getattr(messages, "ProgettiTitle", "Gestione Progetti"))
         if ws is not None:
-            active_label = getattr(messages, "ProgettiActive", "Active: {0}")
+            active_label = getattr(messages, "ProgettiActive", "Attivo: {0}")
             print(Fore.YELLOW + active_label.format(ws.name) + Style.RESET_ALL + Fore.CYAN)
         else:
             print(Fore.LIGHTBLACK_EX + getattr(messages, "RegistaNoProject", "No active project.") + Style.RESET_ALL + Fore.CYAN)
-        print("-"*38 + Style.RESET_ALL)
+        print("="*38 + Style.RESET_ALL)
 
-        # List existing projects
+        # List existing projects with frame
+        print()
+        project_count = len(projects) if projects else 0
+        projects_label = getattr(messages, "ProgettiListLabel", "PROGETTI DISPONIBILI")
+        print(Fore.CYAN + projects_label + f" - {project_count}" + Style.RESET_ALL)
+        print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
+
         if projects:
-            print(Fore.GREEN + getattr(messages, "ProgettiList", "Available projects:") + Style.RESET_ALL)
             for i, name in enumerate(projects, 1):
                 marker = " *" if ws is not None and name == ws.name else ""
                 print(f"  {i}. {name}{marker}")
         else:
             print(Fore.LIGHTBLACK_EX + getattr(messages, "ProgettiNone", "No named projects yet.") + Style.RESET_ALL)
 
+        print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
         print()
+        options_label = getattr(messages, "ProgettiOptionsLabel", "OPZIONI DISPONIBILI")
+        print(Fore.CYAN + options_label + Style.RESET_ALL)
+        print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
         print(getattr(messages, "ProgettiOpt1", "1. New project"))
         print(getattr(messages, "ProgettiOpt2", "2. Select project"))
         print(getattr(messages, "ProgettiOpt3", "3. Delete project"))
@@ -399,6 +408,7 @@ def gestione_progetti(messages, ws, settings=None):
         print(getattr(messages, "ProgettiOpt5", "5. Rename project"))
         print(getattr(messages, "ProgettiOpt6", "6. Open folder in Explorer"))
         print(getattr(messages, "ProgettiOpt0", "0. Back"))
+        print(Fore.CYAN + "="*38 + Style.RESET_ALL)
 
         scelta = input(getattr(messages, "ProgettiPrompt", "Choose:") + " ").strip()
 
@@ -419,8 +429,13 @@ def gestione_progetti(messages, ws, settings=None):
             if not projects:
                 print(Fore.YELLOW + getattr(messages, "ProgettiNone", "No named projects yet.") + Style.RESET_ALL)
                 continue
+            print()
+            select_label = getattr(messages, "ProgettiSelectLabel", "SELEZIONA PROGETTO")
+            print(Fore.CYAN + select_label + f" - {len(projects)}" + Style.RESET_ALL)
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             for i, name in enumerate(projects, 1):
                 print(f"  {i}. {name}")
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             sel = input(getattr(messages, "ProgettiPrompt", "Choose:") + " ").strip()
             try:
                 idx = int(sel) - 1
@@ -437,8 +452,13 @@ def gestione_progetti(messages, ws, settings=None):
             if not projects:
                 print(Fore.YELLOW + getattr(messages, "ProgettiNone", "No named projects yet.") + Style.RESET_ALL)
                 continue
+            print()
+            delete_label = getattr(messages, "ProgettiDeleteLabel", "ELIMINA PROGETTO")
+            print(Fore.CYAN + delete_label + f" - {len(projects)}" + Style.RESET_ALL)
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             for i, name in enumerate(projects, 1):
                 print(f"  {i}. {name}")
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             sel = input(getattr(messages, "ProgettiPrompt", "Choose:") + " ").strip()
             try:
                 idx = int(sel) - 1
@@ -471,8 +491,13 @@ def gestione_progetti(messages, ws, settings=None):
             if not projects:
                 print(Fore.YELLOW + getattr(messages, "ProgettiNone", "No named projects yet.") + Style.RESET_ALL)
                 continue
+            print()
+            dup_label = getattr(messages, "ProgettiDuplicateLabel", "DUPLICA PROGETTO")
+            print(Fore.CYAN + dup_label + f" - {len(projects)}" + Style.RESET_ALL)
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             for i, name in enumerate(projects, 1):
                 print(f"  {i}. {name}")
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             sel = input(getattr(messages, "ProgettiPrompt", "Choose:") + " ").strip()
             try:
                 idx = int(sel) - 1
@@ -496,8 +521,13 @@ def gestione_progetti(messages, ws, settings=None):
             if not projects:
                 print(Fore.YELLOW + getattr(messages, "ProgettiNone", "No named projects yet.") + Style.RESET_ALL)
                 continue
+            print()
+            rename_label = getattr(messages, "ProgettiRenameLabel", "RINOMINA PROGETTO")
+            print(Fore.CYAN + rename_label + f" - {len(projects)}" + Style.RESET_ALL)
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             for i, name in enumerate(projects, 1):
                 print(f"  {i}. {name}")
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             sel = input(getattr(messages, "ProgettiPrompt", "Choose:") + " ").strip()
             try:
                 idx = int(sel) - 1
@@ -521,8 +551,13 @@ def gestione_progetti(messages, ws, settings=None):
             if not projects:
                 print(Fore.YELLOW + getattr(messages, "ProgettiNone", "No named projects yet.") + Style.RESET_ALL)
                 continue
+            print()
+            open_label = getattr(messages, "ProgettiOpenFolderLabel", "APRI CARTELLA")
+            print(Fore.CYAN + open_label + f" - {len(projects)}" + Style.RESET_ALL)
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             for i, name in enumerate(projects, 1):
                 print(f"  {i}. {name}")
+            print(Fore.CYAN + "-"*38 + Style.RESET_ALL)
             sel = input(getattr(messages, "ProgettiPrompt", "Choose:") + " ").strip()
             try:
                 idx = int(sel) - 1
