@@ -1,0 +1,212 @@
+{
+    "version":  "1.0",
+    "generated":  "2026-05-12",
+    "schema_version":  "1.0",
+    "entries":  [
+                    {
+                        "path":  "Installation",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "Tools",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "core",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "locale",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "ps",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "Scripts",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "Settings",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "Docs",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "voices",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  true,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "StartDubbing.bat",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  false,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "Billing/tts_voices_cost.json",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  false,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "credentials/azure_speech_credentials.template.json",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  false,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "credentials/google_speech_credentials.template.json",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  false,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "credentials/README.md",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  false,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "credentials",
+                        "type":  "user",
+                        "install":  false,
+                        "create_empty":  true,
+                        "recursive":  false,
+                        "clean_on_upgrade":  false,
+                        "remove_on_uninstall":  false,
+                        "uninstall_prompt":  true,
+                        "uninstall_prompt_default":  false,
+                        "uninstall_prompt_group":  null,
+                        "uninstall_conditional":  true
+                    },
+                    {
+                        "path":  "Workspace",
+                        "type":  "user",
+                        "install":  false,
+                        "create_empty":  true,
+                        "recursive":  false,
+                        "clean_on_upgrade":  false,
+                        "remove_on_uninstall":  false,
+                        "uninstall_prompt":  true,
+                        "uninstall_prompt_default":  false,
+                        "uninstall_prompt_group":  "work_files",
+                        "uninstall_conditional":  false
+                    },
+                    {
+                        "path":  "Workspace/projects",
+                        "type":  "user",
+                        "install":  false,
+                        "create_empty":  true,
+                        "recursive":  false,
+                        "clean_on_upgrade":  false,
+                        "remove_on_uninstall":  false,
+                        "uninstall_prompt":  true,
+                        "uninstall_prompt_default":  false,
+                        "uninstall_prompt_group":  "work_files",
+                        "uninstall_conditional":  false
+                    },
+                    {
+                        "path":  "Logs",
+                        "type":  "user",
+                        "install":  false,
+                        "create_empty":  true,
+                        "recursive":  false,
+                        "clean_on_upgrade":  false,
+                        "remove_on_uninstall":  false,
+                        "uninstall_prompt":  true,
+                        "uninstall_prompt_default":  false,
+                        "uninstall_prompt_group":  "work_files",
+                        "uninstall_conditional":  false
+                    },
+                    {
+                        "path":  "Billing",
+                        "type":  "user",
+                        "install":  false,
+                        "create_empty":  true,
+                        "recursive":  false,
+                        "clean_on_upgrade":  false,
+                        "remove_on_uninstall":  false,
+                        "uninstall_prompt":  true,
+                        "uninstall_prompt_default":  false,
+                        "uninstall_prompt_group":  "billing",
+                        "uninstall_conditional":  false
+                    }
+                ]
+}

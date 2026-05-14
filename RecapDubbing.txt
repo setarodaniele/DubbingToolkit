@@ -1,0 +1,702 @@
+RecapDubbing.txt
+Schema e funzionamento del progetto:
+
+================================================
+= SEZIONE 1 – DubbingToolkit Project Structure =
+================================================
+
+Root e file principali
+
+DubbingToolkit/
+├─ .claude/                       - Configurazioni locali e metadati per integrazione con strumenti AI (Claude).
+├─ Billing/                       - Documentazione amministrativa e monitoraggio costi.
+│  ├─ consumo_tts.json             - Registro del consumo TTS per ciascun progetto/voce.
+│  └─ tts_voices_cost.json         - Tariffe e costi associati alle voci TTS disponibili.
+├─ core/                          - Moduli di supporto generici e gestione interfaccia.
+│  ├─ __init__.py                  - Inizializzazione del package core.
+│  ├─ api_check.py                 - Verifica presenza e validità delle credenziali API TTS locali.
+│  ├─ archive_pruner.py            - Pruning archivi con anteprima dry-run e conferma utente (doppia per lo stage dubbed).
+│  ├─ credentials_manager.py       - Gestione centralizzata delle credenziali API dei provider TTS.
+│  ├─ file_selector.py             - Gestione selezione file tramite interfaccia.
+│  ├─ input_parsing.py             - Parsing e validazione degli input.
+│  ├─ messages.py                  - Gestione centralizzata dei messaggi localizzati.
+│  ├─ source_importer.py           - Dialog importazione file esterni nel workspace (copia/sposta/esterno) con size, spazio disco e warning cross-project.
+│  ├─ ui_colors.py                 - Definizione palette colori per output in console.
+│  ├─ ui_printer.py                - Funzioni per stampare messaggi su console con formattazione.
+│  ├─ utils_settings.py            - Utility centralizzate per lettura/scrittura settings (write_json_atomic, merge_and_rebuild).
+│  ├─ utils_tts.py                 - Funzioni di utilità condivise per operazioni TTS.
+│  └─ workspace_manager.py         - Gestione workspace attivo (solo progetti nominati), struttura stage, rotazione e pruning archivi.
+├─ credentials/                   - File di credenziali personali per accesso ai servizi TTS e modelli.*
+│  ├─ azure_speech_credentials.json
+│  ├─ azure_speech_credentials.template.json
+│  ├─ ElevenLab.json
+│  ├─ google_speech_credentials.json
+│  ├─ google_speech_credentials.template.json
+│  ├─ HuggingFace.json
+│  └─ openai_key.json
+├─ Docs/                          - Documentazione utente localizzata per lingua.
+│  ├─ en/ it/ de/ es/ fr/ pt/ ru/ zh/  - Una cartella per lingua con i file doc.
+│  └─ templates/                   - Template condivisi tra le lingue.
+├─ Installation/                  - Installazioni locali di Python utilizzate dal progetto.*
+│  ├─ Python310/                  - Installazione completa di Python 3.10 in cartella personalizzata, teoricamente portabile.
+│  ├─ Python311/                  - Installazione completa di Python 3.11 in cartella personalizzata, teoricamente portabile.
+├─ installer/                     - Sistema di build e packaging del progetto per distribuzione.
+│  ├─ build_payload/              - Contenuto generato per il pacchetto finale (payload installazione).
+│  ├─ build.ps1                   - Script principale di build; crea il pacchetto del progetto secondo le regole definite.
+│  ├─ build_include.json          - Lista file/cartelle da includere nel pacchetto.
+│  ├─ build_exclude.json          - Lista file/cartelle da escludere dal pacchetto.
+│  └─ build_empty_dirs.json       - Elenco cartelle vuote da creare nel pacchetto finale.
+├─ locale/                        - File di localizzazione e gestione lingue per trascrizione e traduzione.
+│  ├─ helsinki_languages.json      - Lingue supportate dai modelli Helsinki-NLP (attualmente unico motore usato).
+│  ├─ helsinki_languages_complete.json - Elenco completo delle lingue Helsinki-NLP.
+│  ├─ supported_languages.json     - NON utilizzato al momento; previsto per futura integrazione multi-modello.
+│  ├─ translation_models_complete.json - NON utilizzato; struttura prevista per gestione futura di più modelli di traduzione.
+│  ├─ Active/                      - File JSON delle lingue attive utilizzate dal sistema (set pulito e validato).
+│  │  ├─ backup/                   - Archivio temporaneo prima di eventuale eliminazione.
+│  │  ├─ en.json                   - Inglese
+│  │  ├─ ru.json                   - Russo
+│  │  ├─ it.json                   - Italiano
+│  │  ├─ es.json                   - Spagnolo
+│  │  ├─ de.json                   - Tedesco
+│  │  ├─ pt.json                   - Portoghese
+│  │  ├─ fr.json                   - Francese
+│  │  └─ zh.json                   - Cinese
+│  └─ System/                      - File di sistema e metadati sulle lingue supportate.
+│     ├─ languages.json            - Elenco completo delle lingue concettualmente supportate dal progetto.
+│     └─ whisper_languages.json    - Elenco delle lingue effettivamente supportate dal motore Whisper.
+├─ Logs/                          - Log operativi generati dal Launcher e script principali.
+├─ ps/                            - Moduli PowerShell di supporto per logging e messaggistica del runtime.
+│  ├─ Logging.psm1                - Sistema di logging con livelli INFO/WARN/ERROR basato su messaggi localizzati.
+│  └─ Messages.psm1               - Gestione messaggi per chiavi con supporto JSON/Hashtable e parametri dinamici.
+├─ Repository/                    - Risorse condivise: modelli locali, librerie, file di supporto e asset riutilizzabili.
+├─ Scripts/                                 - Script eseguibili e moduli operativi del progetto.
+│  ├─ maintenance/                           - Script di manutenzione, generazione JSON, traduzioni e utility non runtime.
+│  │  ├─ translation/                        - Pipeline per gestione, analisi, validazione e traduzione dei file di localizzazione.
+│  │  │  ├─ backup/                          - Backup temporanei dei file di traduzione durante operazioni critiche.
+│  │  │  ├─ cache/                           - Cache operativa per traduzioni e chiamate API.
+│  │  │  │  ├─ cache_debug.log               - Log dettagliato delle operazioni di caching e API.
+│  │  │  │  └─ translation_cache.json        - Cache persistente delle traduzioni per evitare richieste duplicate.
+│  │  │  ├─ output/                          - File JSON tradotti generati dalla pipeline.
+│  │  │  ├─ Report/                          - Report di analisi strutturale e placeholder per lingua.
+│  │  │  │  └─ <lang>/                       - Sottocartelle generate automaticamente per ogni lingua analizzata.
+│  │  │  │     ├─ key_report.txt             - Elenco e analisi delle chiavi presenti.
+│  │  │  │     ├─ placeholder_map.json       - Mappatura strutturata dei placeholder.
+│  │  │  │     ├─ placeholder_map.txt        - Versione leggibile della mappa placeholder.
+│  │  │  │     ├─ unused_key_clusters.txt    - Raggruppamento chiavi inutilizzate o sospette.
+│  │  │  │     └─ validate_locale_report.txt - Esito della validazione del file lingua.
+│  │  │  ├─ Temp/                            - File temporanei intermedi della pipeline.
+│  │  │  ├─ Clean-LocaleUnusedKeys.ps1       - Rimuove chiavi non utilizzate dai file di localizzazione.
+│  │  │  ├─ config.json                      - Configurazione centrale della pipeline (input, lingue, cache, output).
+│  │  │  ├─ Extract-Placeholders.ps1         - Estrae e mappa i placeholder dai file sorgente.
+│  │  │  ├─ Fix-LocaleDuplicates.ps1         - Identifica e corregge chiavi duplicate nei JSON lingua.
+│  │  │  ├─ LocaleKeyAnalyzer.ps1            - Analizza incoerenze, chiavi mancanti e struttura dei file lingua.
+│  │  │  ├─ LocaleTranslator.ps1             - Motore di traduzione con protezione placeholder e cache API.
+│  │  │  ├─ Protect-Placeholders.ps1         - Maschera e ripristina placeholder per evitare corruzione in traduzione.
+│  │  │  ├─ README.md                        - Documentazione tecnica della pipeline di traduzione.
+│  │  │  └─ Validate-LocaleJson.ps1          - Valida struttura, formattazione e integrità dei file JSON lingua.
+│  │  ├─ build_helsinki_translation_pairs.py   - Crea file JSON con lingue e coppie di traduzione Helsinki.
+│  │  ├─ build_translation_pairs.py           - Crea file JSON per lingue e coppie di traduzione multi-modello.
+│  │  ├─ GenerateWhisperLangs.py              - Genera file JSON con lingue supportate dal motore Whisper.
+│  │  └─ pulizia_debug.py                      - Rimuove file temporanei e log di debug non necessari.
+│  ├─ Temp/                                  - Script temporanei o sperimentali.
+│  ├─ __init__.py                            - Inizializzazione del package Scripts.
+│  ├─ backup_utils.py                        - Gestione backup e storico file generati.
+│  ├─ BootstrapSettings.py                   - Bootstrap avvio: crea settings_persistent.json se assente, applica lingua selezionata, ricostruisce settings.json via merge.
+│  ├─ estrai_tracce.py                       - Estrazione tracce audio dai file video sorgente.
+│  ├─ info_manager.py                        - Gestione informazioni runtime e metadati di processo.
+│  ├─ InstallDependencies.ps1                - Installazione automatizzata dipendenze Python.
+│  ├─ Launcher.ps1                           - Avvio principale del progetto e orchestrazione iniziale.
+│  ├─ menu_lingue.py                         - Selezione e gestione lingue di sistema e traduzione.
+│  ├─ menu_lingue_tts.py                     - Gestione selezione lingue per pipeline TTS.
+│  ├─ menu_voices.py                         - Gestione selezione e configurazione voci TTS.
+│  ├─ monitoraggio_consumo.py                - Monitoraggio consumo API e gestione costi.
+│  ├─ Regista.py                             - Coordinatore centrale del flusso operativo (orchestratore).
+│  ├─ requirements.txt                       - Dipendenze Python principali del progetto.
+│  ├─ reset_env.ps1                          - Ripristino controllato dell’ambiente virtuale.
+│  ├─ segmentazione_avanzata.py              - Segmentazione avanzata (attualmente non implementato).
+│  ├─ settings_manager.py                    - Lettura, validazione e gestione configurazioni.
+│  ├─ SilenziaWarning.py                     - Soppressione warning non critici in fase runtime.
+│  ├─ Sottotitoli.py                         - Gestione sottotitoli finali (non ancora integrato nel flusso principale).
+│  ├─ traduci_testo.py                       - Motore di traduzione SRT basato su modelli Helsinki-NLP.
+│  ├─ trascrivi_audio.py                     - Trascrizione audio tramite Whisper / WhisperX.
+│  ├─ tts_azure.py                           - Generazione audio doppiato tramite TTS Azure.
+│  ├─ tts_config_manager.py                  - Gestione configurazioni TTS (provider, voci, parametri).
+│  ├─ tts_dubbing.py                         - Coordinamento pipeline TTS per doppiaggio.
+│  ├─ tts_google.py                          - Generazione audio doppiato tramite TTS Google.
+│  ├─ tts_menu.py                            - Interfaccia menu per gestione TTS.
+│  ├─ tts_merge.py                           - Unione e sincronizzazione segmenti audio TTS.
+│  ├─ VenvManager.ps1                        - Gestione ambienti virtuali (creazione, attivazione, controllo).
+│  └─ VoicesRepository.py                    - Genera repository audio voci TTS usando frasi di test.
+├─ Settings/                      - File di configurazione del progetto.
+│  ├─ settings.json               - Configurazione runtime attiva (file DERIVATO: ricostruito ad ogni avvio da merge; gitignored).
+│  ├─ settings_default.json       - Default di fabbrica dell'app (sola lettura; sorgente per il merge runtime).
+│  ├─ settings_persistent.json    - Preferenze utente persistenti (gitignored; sopravvive ai soft reset).
+│  ├─ settings_persistent_default.json - Default di fabbrica per le preferenze utente (sorgente per creare/ripristinare settings_persistent.json).
+│  └─ reset.json                  - Flag di ripristino (reset_pending, first_launch).
+├─ Temp/                          - File temporanei (pulizia periodica consigliata).
+├─ Test/                          - Script e file per test controllati.
+├─ Tools/                         - Tool locali e binari esterni necessari al progetto.
+│  ├─ 7zr.exe                     - 7-Zip standalone CLI (bundled); usato da RuntimeDependencies.ps1 per estrarre archivi .7z.
+│  └─ ffmpeg-7.1.1-full_build/    - Build completa di ffmpeg per conversioni e manipolazioni audio/video (scaricata a runtime; gitignored).
+├─ venv/                          - Virtual environment principale del progetto.
+├─ Workspace/                     - Dati operativi della pipeline (struttura attiva).
+│  ├─ projects/                    - Tutti i progetti nominati.
+│  │  └─ <nome_progetto>/          - Ogni progetto ha la struttura stage completa.
+│  │     ├─ video_input/           - Video sorgente del progetto.
+│  │     ├─ audio_input/           - Audio importati manualmente.
+│  │     ├─ audio_extraction/      - Audio estratti dai video; organizzati per track_id.
+│  │     │  └─ <track_id>/current/ e archive/
+│  │     ├─ transcripts/           - Trascrizioni SRT; organizzate per track_id.
+│  │     │  └─ <track_id>/current/ e archive/
+│  │     ├─ translated/            - SRT tradotti; organizzati per track_id.
+│  │     │  └─ <track_id>/current/ e archive/
+│  │     ├─ dubbed/                - Audio TTS finali; organizzati per track_id.
+│  │     │  └─ <track_id>/current/ e archive/
+│  │     └─ output/                - Output finali opzionali.
+│  └─ temp/                        - File temporanei del workspace.
+├─ voices/                                  - Gestione voci TTS e file di supporto.
+│  ├─ fetch_azure_voices.py                  - Script per recuperare le voci disponibili da TTS Azure.
+│  ├─ fetch_google_voices.py                 - Script per recuperare le voci disponibili da TTS Google.
+│  ├─ voices_azure.json                      - Elenco filtrato delle voci Azure disponibili.
+│  ├─ voices_azure_complete.json             - Elenco completo e dettagliato delle voci Azure.
+│  ├─ voices_generate_test_sentences.log     - Log della generazione di frasi di test per le voci.
+│  ├─ voices_generate_test_sentences.py      - Script per generare frasi di test su tutte le voci.
+│  ├─ voices_google.json                     - Elenco filtrato delle voci Google disponibili.
+│  ├─ voices_google_complete.json            - Elenco completo e dettagliato delle voci Google.
+│  ├─ voices_index.json                      - Indice flat di tutte le voci TTS disponibili (Azure + Google), con metadati.
+│  ├─ voices_test_sentences.json             - Frasi di test predefinite per validare le voci TTS.
+│  └─ voices_output/                         - Repository audio generato per ogni voce.
+│     ├─ azure/
+│     │  └─ <LANG-CODE>/
+│     │     └─ <voice>.mp3
+│     └─ google/
+│        └─ <LANG-CODE>/
+│           └─ <voice>.mp3
+├─ .gitignore                     - Regole di esclusione file per versionamento Git.
+├─ CLAUDE.md                      - Documentazione e note operative per utilizzo con assistente AI Claude.
+├─ RecapDubbing.txt               - Documento strutturale e capitolato tecnico.
+└─ StartDubbing.bat               - Entry point del progetto.
+
+Note:
+---------------------
+Installation/
+La cartella Installation contiene installazioni locali complete di Python gestite dal progetto.
+Il sistema utilizza esclusivamente queste versioni come runtime, evitando dipendenze da Python installati nel sistema operativo.
+Il Launcher e VenvManager selezionano e utilizzano queste installazioni per:
+- Creare e gestire gli ambienti virtuali (venv/)
+- Garantire coerenza tra ambienti diversi
+- Rendere il progetto portabile e replicabile
+Gli ambienti virtuali vengono sempre costruiti a partire da queste installazioni locali.
+
+* Tutti i file presenti nella cartella `credentials/` contengono chiavi e credenziali personali per i servizi TTS e modelli.
+Questi file NON devono essere inclusi nel repository e devono essere gestiti localmente.
+I file `.template.json` fungono da riferimento per la struttura richiesta e devono essere utilizzati come base per la configurazione.
+
+
+=======================================
+= SEZIONE 2 – Convenzioni di progetto =
+=======================================
+
+Convenzioni e Naming
+--------------------
+
+Stato del progetto
+- Il progetto è attualmente in uno stato ibrido:
+  una parte dei moduli e delle cartelle esistenti non segue le convenzioni definite di seguito.
+- Per preservare la stabilità, il codice esistente NON viene modificato automaticamente.
+- Le convenzioni si applicano obbligatoriamente a tutti i nuovi file e moduli.
+- Un eventuale refactoring completo per allineare il codice esistente alle convenzioni verrà pianificato separatamente,
+  solo dopo la stabilizzazione della pipeline principale.
+
+Regole generali
+- Tutti i percorsi utilizzati negli script devono essere relativi alla root del progetto.
+- Nessuna stringa hardcoded nei moduli runtime:
+  tutti i messaggi devono provenire dai file JSON di localizzazione,
+  ad eccezione del bootstrap iniziale e degli script di servizio non destinati al runtime.
+- Gli script di servizio sono esclusi dal concetto di runtime applicativo e possono contenere logica tecnica non localizzata.
+- In caso di chiavi mancanti nei file JSON, i sistemi devono evidenziare il problema
+  tramite fallback esplicito (es. [MISSING: key] o equivalente).
+- Le chiavi mancanti non sono ammesse in ambiente stabile e devono essere corrette.
+- Tutti gli script devono seguire la struttura definita nella sezione "Struttura degli script".
+- I moduli non ancora allineati a questo comportamento devono essere adeguati
+  durante le attività di refactoring.
+
+Naming file e cartelle
+- Nuove cartelle: minuscolo con underscore (no spazi, no caratteri speciali)
+- Moduli Python: minuscolo con underscore (es. tts_google.py)
+- Script temporanei: prefisso obbligatorio test_
+
+Naming codice
+- Classi → CamelCase (es. TextToSpeech)
+- Funzioni e variabili → minuscolo con underscore (es. sintetizza_voce)
+
+Script e moduli
+------------------------------------------------------------
+- Script operativo → file .py eseguibile direttamente (runtime o utility)
+- Modulo → file .py importabile all’interno di altri script
+
+Stile codice
+- Riferimento generale: PEP8
+- Indentazione: 4 spazi
+- Lunghezza righe: flessibile se necessario per leggibilità operativa
+
+Struttura degli script
+------------------------------------------------------------
+- Tutti gli script del progetto devono seguire una struttura standardizzata e obbligatoria per garantire leggibilità,
+  manutenzione e coerenza tra moduli Python e PowerShell.
+
+Regole strutturali generali
+- Ogni script deve essere organizzato in blocchi numerati progressivi (1, 2, 3, ...).
+- La numerazione deve essere continua, ordinata e senza salti o duplicazioni.
+- Il numero totale dei blocchi non è vincolato: uno script può contenere un numero variabile di blocchi (5, 10, 20 o più) in base alla complessità.
+- I blocchi definiti nel template rappresentano una struttura di riferimento e non una numerazione rigida.
+- Ogni blocco principale deve avere:
+  - numero identificativo
+  - titolo descrittivo breve in inglese
+- Ogni blocco può contenere sottoblocchi numerati (es. 1.1, 1.2, 2.1).
+- Ogni sottoblocco deve includere una micro-intestazione descrittiva su singola riga.
+- Le sezioni logiche fondamentali (imports, configurazione, utilities, logica, esecuzione) devono essere sempre presenti,
+  anche se suddivise in più blocchi.
+- La numerazione dei blocchi deve essere coerente con il flusso logico dello script.
+
+Intestazione script (obbligatoria)
+- Ogni script deve iniziare con una intestazione standard conforme al template ufficiale.
+- L’intestazione deve includere:
+  - nome dello script
+  - breve descrizione funzionale (1–3 righe)
+  - input principali (se presenti)
+  - output principali (se presenti)
+  - note operative essenziali
+- L’intestazione deve essere scritta in inglese, come già indicato, e non contenere logica esecutiva.
+
+Regole di organizzazione interna
+- Imports e dipendenze devono essere isolati nel primo blocco.
+- Configurazioni e path devono essere separati in uno o più blocchi dedicati.
+- Le utility devono essere raggruppate in blocchi autonomi.
+- La logica principale deve essere separata dalla fase di esecuzione (main flow).
+- Il blocco di esecuzione principale (main) deve essere sempre posizionato alla fine dello script
+  e deve corrispondere all’ultimo blocco numerato.
+- L’ordine dei blocchi deve seguire il flusso logico dello script.
+
+Standard di funzioni
+- Ogni funzione deve includere una descrizione inline su singola riga.
+- La descrizione deve essere breve e in inglese.
+- Il formato deve essere:
+  nome_funzione – descrizione breve (one line)
+- Le funzioni devono essere logicamente raggruppate per area funzionale.
+
+Riferimento ufficiale
+- Tutti gli script devono seguire il template definito in:
+  RecapDubbing.txt – Sezione 6
+- La Sezione 6 di questo documento rappresenta il modello strutturale ufficiale
+  e l'implementazione canonica delle regole definite in questa sezione.
+  
+Gestione messaggistica (Python + Runtime system)
+------------------------------------------------------------
+- Tutti i messaggi di interfaccia Python devono essere gestiti tramite:
+  core/messages.py → classe Messages
+- Il sistema centralizza:
+  - caricamento lingua da settings.json (interface_lang)
+  - lettura file JSON da locale/Active/
+  - In caso di chiavi mancanti nei file JSON, il sistema utilizza fallback esplicito [MISSING: key].
+- Lo script principale e tutti i moduli runtime devono utilizzare esclusivamente questo sistema.
+- Eccezione:
+  script di bootstrap iniziale e script di servizio possono usare output non localizzato.
+
+Gestione lingue (locale)
+------------------------------------------------------------
+- La gestione delle lingue è centralizzata nella cartella locale/
+- locale/Active/
+  contiene solo lingue localizzate e attive nel sistema
+  → usate per interfaccia e runtime
+- locale/System/
+  contiene metadati e definizioni di sistema:
+  - languages.json → lingue concettualmente supportate
+  - whisper_languages.json → lingue effettivamente supportate da Whisper
+- Le lingue attive sono l’unico set valido per menu e selezione utente.
+
+Gestione messaggistica PowerShell
+------------------------------------------------------------
+- Sistema basato su moduli dedicati:
+  ps/Messages.psm1
+  ps/Logging.psm1
+- Messages.psm1:
+  - gestione messaggi tramite chiavi
+  - supporto Hashtable e JSON object
+  - interpolazione parametri
+  - fallback: "Missing key: <key>"
+- Logging.psm1:
+  - Write-Log
+  - livelli: INFO / WARN / ERROR
+  - integrazione con Get-Message
+  - output console colorato per livello
+- Il sistema PowerShell è equivalente concettualmente al sistema Python,
+  ma separato per ambiente runtime.
+- I moduli PowerShell devono utilizzare esclusivamente questo sistema.
+- I moduli legacy non ancora allineati sono considerati compatibilità temporanea.
+
+Script di test
+------------------------------------------------------------
+- Tutti gli script di test devono avere prefisso obbligatorio:
+  test_
+- Il prefisso deve essere rimosso quando lo script entra nel flusso operativo.
+- Non sono ammessi nomi alternativi.
+
+Compatibilità legacy
+------------------------------------------------------------
+- Il codice esistente che non rispetta le convenzioni viene mantenuto invariato.
+- Le nuove regole NON devono rompere la compatibilità con il codice già funzionante.
+- Il refactoring completo del codice legacy verrà pianificato separatamente,
+  solo dopo la stabilizzazione della pipeline principale.
+
+Code Documentation Rules
+------------------------------------------------------------
+- I commenti nel codice devono essere scritti in inglese.
+- Le stringhe dell’interfaccia utente devono essere gestite tramite sistema di localizzazione.
+- Durante lo sviluppo si utilizza italiano come base (locale/Active/it.json),
+  ma il codice deve rimanere documentato in inglese.
+- Le stringhe di interfaccia possono essere sviluppate in italiano come base locale,
+  ma devono essere sempre strutturate per successiva internazionalizzazione.
+- L’obiettivo è mantenere un codice internazionalmente leggibile indipendentemente dalla lingua dell’interfaccia.
+
+Gestione File di Lavoro (modello Workspace)
+------------------------------------------------------------
+- Tutti i file generati dalla pipeline vivono nel workspace attivo (Workspace/projects/<nome>/).
+- L'app richiede sempre un progetto nominato aperto; non esiste workspace anonimo/predefinito.
+- Ogni stage (audio_extraction, transcripts, translated, dubbed) è organizzato per track_id:
+    Workspace/projects/<nome>/<stage>/<track_id>/current/   → output attivo
+    Workspace/projects/<nome>/<stage>/<track_id>/archive/   → archivi precedenti (rotazione automatica)
+- La rotazione viene eseguita da WorkspaceManager.rotate_to_archive() prima di ogni nuova generazione.
+- Il pruning degli archivi è gestito da core/archive_pruner.py con anteprima dry-run e conferma utente.
+  Politica di conferma:
+    - stage dubbed: doppia conferma obbligatoria (audio finale irreversibile)
+    - altri stage: singola conferma se show_confirmations=True in settings
+- I file in video_input/ e audio_input/ del progetto non vengono mai modificati dalla pipeline.
+- Tracciabilità affidata a project_info.json nella root del workspace attivo (aggiornato da info_manager.py).
+  Il file viene creato automaticamente alla creazione o duplicazione del progetto.
+  Ogni step della pipeline lo aggiorna tramite i metodi dedicati di InfoManager:
+    - trascrivi_audio.py  → update_trascrizione(track_id, {...})
+    - traduci_testo.py    → update_traduzione(track_id, {...})
+    - tts_dubbing.py      → update_tts(track_id, {...})
+  Include la sezione storico_rinomina per tracciare la cronologia delle rinominazioni del progetto.
+  Il file project_info.txt (leggibile) viene rigenerato ad ogni aggiornamento tramite generate_info_file().
+- Workspace/temp/ raccoglie file temporanei del workspace corrente.
+
+=============================================
+= SEZIONE 3 – Stato Attuale / Funzionamento =
+=============================================
+
+- Flusso operativo principale:
+  StartDubbing.bat → Launcher.ps1 → Regista.py → pipeline TTS / trascrizione / traduzione
+- Il sistema è composto da una pipeline ibrida Python + PowerShell orchestrata dal launcher principale.
+- Le regole strutturali del codice, la messaggistica e la localizzazione sono definite nella Sezione 2.
+
+Pipeline (stage e percorsi Workspace)
+--------------------------------------
+| Step | Modulo               | Stage Workspace         |
+|------|----------------------|-------------------------|
+| 1 — Estrai audio    | estrai_tracce.py   | video_input → audio_extraction |
+| 2 — Trascrivi       | trascrivi_audio.py | audio_extraction o audio_input → transcripts |
+| 3 — Traduci         | traduci_testo.py   | transcripts → translated |
+| 4 — Dubba (TTS)     | tts_menu.py        | translated → dubbed |
+
+- Ogni stage usa la struttura <stage>/<track_id>/current/ per l'output attivo
+  e <stage>/<track_id>/archive/ per archivi precedenti.
+- WorkspaceManager (core/workspace_manager.py) gestisce il workspace attivo
+  e la rotazione archivi. archive_pruner.py gestisce il pruning con conferma utente.
+- Workspace attivo scritto in Workspace/active_workspace.json.
+
+Workspace
+----------
+- L'app richiede sempre un progetto nominato aperto; nessun workspace predefinito anonimo.
+- Progetti in Workspace/projects/<nome>/ (creabili/selezionabili da Regista.py menu Progetti).
+- Ogni progetto ha la struttura stage completa (video_input, audio_input,
+  audio_extraction, transcripts, translated, dubbed, output).
+- Il workspace attivo viene risolto da WorkspaceManager.get_active() all'avvio.
+
+Architettura Settings (implementata)
+--------------------------------------
+- I settings seguono un modello a tre livelli distinti:
+
+  settings_default.json          → default di fabbrica dell'app (mai modificato a runtime)
+  settings_persistent_default.json → default di fabbrica per le preferenze utente (mai modificato a runtime)
+         ↓ (merge ad ogni avvio via BootstrapSettings.py)
+  settings_persistent.json       → preferenze utente (modificate solo da settings_manager o installer)
+         ↓
+  settings.json                  → config runtime completa (file derivato, ricostruito ad ogni avvio)
+
+- Tutte le scritture JSON usano write_json_atomic() (core/utils_settings.py): pattern .tmp + os.replace
+  per prevenire corruzione in caso di crash o chiusura forzata.
+
+- Lifecycle lingua interfaccia:
+  1. Installer InnoSetup (opzionale) → scrive language_preset_from_installer=true in settings_persistent.json
+  2. Launcher.ps1 → legge il flag; se presente salta il menu e mostra avviso; altrimenti menu interattivo
+  3. BootstrapSettings.py → scrive interface_lang in settings_persistent.json e ricostruisce settings.json
+  4. Runtime (menu 8→3) → modifica persistent + rebuild immediato
+  5. Soft reset (menu 8→2) → ripristina settings_persistent.json da _default + rebuild
+  6. Hard reset (menu 8→9) → stesso del soft + eliminazione e ricostruzione venv/
+
+- Sync unidirezionale: Translation_Target_Lang → Dubbing_Lang
+  (applicata in merge_and_rebuild e in menu_lingue.py al cambio lingua traduzione)
+
+- I tre campi lingua sessione (Transcript_Audio_Spoken_Lang, Transcript_Target_Lang,
+  Translation_Source_Lang) sono derivati da interface_lang ad ogni avvio e non persistono.
+
+Reset
+------
+- Soft reset: ripristina preferenze utente ai default di fabbrica; non tocca venv/ né logs.
+- Hard reset: stesso del soft + elimina venv/ (rename in venv_old poi delete) + rebuild al prossimo avvio.
+  Richiede doppia conferma esplicita con descrizione delle conseguenze in tutte le 8 lingue.
+
+Runtime Dependencies
+---------------------
+- ffmpeg 7.1.1: scaricato da GyanD/codexffmpeg GitHub Releases (formato .7z)
+- voices_output: scaricato da SmallSoftwareHouse/DubbingToolkit GitHub Releases (formato .7z)
+- Estrazione: Tools/7zr.exe (bundled nel repo e nel payload installer)
+- Nessuna dipendenza da tool di sistema (tar.exe rimosso)
+
+================================
+= SEZIONE 4 – Scripts Overview =
+================================
+
+ Linee guida per l’overview degli script
+-----------------------------------------
+- La sezione definisce linee guida per la documentazione e il riepilogo degli script all’interno del recap.
+- Non definisce come gli script devono essere strutturati o implementati; tali regole sono stabilite nella Sezione 2.
+- Il recapDubbing è uno strumento di supporto alla comprensione del codice e non fa parte del contratto strutturale del progetto.
+- Le linee guida non sono vincolanti, ma sono consigliate per garantire coerenza e leggibilità tra le overview degli script.
+
+- Overview script (opzionale)
+------------------------------
+- È possibile includere una overview per fornire una sintesi chiara dello scopo e del comportamento dello script.
+- È particolarmente utile per moduli core o complessi.
+- Gli script semplici o di servizio possono ometterla.
+
+- Formato consigliato (non vincolante)
+--------------------------------------
+- Nome del modulo
+- Funzione generale (descrizione breve)
+- Principali passaggi operativi (flusso di esecuzione)
+- Funzioni principali (nome + parametri in formato compatto)
+- Note aggiuntive (facoltative)
+
+
+Scripts:
+------------------------------------------------------------
+-- Overview degli script non ancora redatte. Da aggiungere progressivamente per i moduli core o più complessi. --	
+
+	
+================================
+=    SEZIONE 5 TO-DO LIST      =
+================================
+
+Nota generale
+- La sezione è divisa in due blocchi: DA FARE e COMPLETATE.
+- DA FARE: descrizione completa con contesto e note operative.
+- COMPLETATE: solo titolo + riferimento a dove è documentata l’implementazione.
+
+
+========================================
+= DA FARE
+========================================
+
+--- [ALTA PRIORITÀ] Aggiornamento InnoSetup per nuovo sistema settings e Workspace
+- Quando l’installer viene aggiornato, deve scrivere settings_persistent.json
+  con language_preset_from_installer=true e interface_lang al momento dell’installazione.
+- Senza questa modifica, Launcher.ps1 mostrerà il menu interattivo anche post-install.
+- Gli shortcut/link verso cartelle Workspace devono puntare a Workspace/projects/.
+  Valutare se rinominare il concetto in Links/ o Navigator/ per evitare conflitti con Workspace/ dati.
+- Nota: da fare contestualmente alla pubblicazione dell’installer; non blocca la versione standalone.
+
+--- Controllo avanzato della lingua (Whisper)
+- Attualmente la lingua viene rilevata automaticamente da Whisper senza vincoli o validazione della confidenza.
+- Obiettivo futuro: analizzare l’output di rilevazione lingua e introdurre logica di valutazione qualità.
+- In caso di bassa confidenza o incoerenza: segnalazione all’utente.
+- Eventuale modalità avanzata per forzare lingua con warning esplicito.
+- Scopo: usare la detection lingua anche come indicatore di qualità dell’audio.
+
+--- Implementazione post-processing testo (Traduzione → TTS)
+- Pipeline di normalizzazione testo tra traduzione e sintesi vocale.
+- Include:
+  - pulizia spazi e punteggiatura
+  - normalizzazione frasi per TTS
+  - eventuale riscrittura tramite AI per ottimizzazione parlato
+- Obiettivo: migliorare naturalezza e qualità dell’audio generato.
+
+--- Ottimizzazione gestione memoria trascrizione
+- Attualmente i file audio vengono caricati completamente in memoria durante la trascrizione.
+- Questo può creare problemi su sistemi con RAM limitata.
+- Migliorie future:
+  - streaming audio
+  - elaborazione a blocchi
+  - liberazione memoria per segmento
+  - uso modelli più leggeri su hardware limitato
+
+--- Segmentazione avanzata (Whisper + analisi semantica)
+- Attualmente il sistema segmenta e trascrive senza analisi approfondite del contenuto.
+- Sviluppi futuri:
+  - confronto tra RAW e segmentato per errori o omissioni
+  - rilevamento silenzi e rumore
+  - analisi qualità semantica dei segmenti
+  - correzione automatica frasi spezzate o troppo lunghe
+  - miglioramento allineamento audio-testo
+
+--- Inserimento durata effettiva trascrizione nel file info
+- Registrare il tempo reale di elaborazione Whisper per ogni audio.
+- Utilità:
+  - confronto prestazioni tra modelli
+  - analisi performance pipeline
+  - ottimizzazione futura dei parametri
+
+--- Integrazione WhisperX (futuro)
+- Possibile integrazione per:
+  - segmentazione avanzata
+  - alignment migliorato
+  - gestione audio più precisa
+- Deve rimanere opzionale e non rompere il flusso base.
+
+--- Monitor avanzamento installazione e dimensione cartelle
+- Interfaccia PowerShell per mostrare progressi installazione e crescita cartelle in tempo reale.
+- Possibile timeout automatico a fine installazione venv.
+- Tutti i messaggi devono essere localizzati via JSON.
+
+--- Traduzione indiretta con lingua pivot (inglese)
+- Supporto traduzione tra lingue non direttamente compatibili.
+- Uso dell’inglese come lingua intermedia.
+- Attivazione automatica solo se coppia diretta non disponibile.
+- Basato su helsinki_languages.json.
+
+--- Verifica lingua sorgente automatica
+- Lettura lingua rilevata da file _info.txt.
+- Confronto con lingua selezionata.
+- Avviso in caso di mismatch tra lingua attesa e reale.
+
+--- Centralizzazione gestione lingue in settings_manager (pending minore)
+- Parte principale completata (vedi COMPLETATE).
+- Pending post-pubblicazione: consentire override lingua per singoli moduli;
+  ridurre duplicazione logica residua tra script.
+
+--- File recenti nel selettore file
+- Al momento il dialog si apre sul Desktop (default); tkinter non supporta la vista "Recenti" di Windows.
+- Implementare una lista interna di file usati di recente per categoria (video, audio).
+- La lista viene proposta nel menu testuale prima del dialog:
+    1. [Recente] nomefile.mp4  (percorso)
+    2. Sfoglia...
+    0. Annulla
+- Richiede persistenza della lista (es. in settings o file dedicato) e gestione file non più esistenti.
+- Tocca core/file_selector.py e tutti i punti di selezione manuale (estrai_tracce, trascrivi_audio).
+
+
+========================================
+= COMPLETATE
+========================================
+
+--- [COMPLETATO] Schema versioning / migration per settings_persistent.json
+    → Sezione 3, Architettura Settings. Campo schema_version: 1 in settings_persistent_default.json;
+      migrazione automatica in BootstrapSettings.py ad ogni avvio.
+
+--- [COMPLETATO] Refactoring project_info.json centralizzato nella root del workspace
+    → Scripts/info_manager.py. Un unico file in Workspace/projects/<nome>/project_info.json;
+      dati per-stage/per-track in metadata.json separati per track_id.
+
+--- [COMPLETATO] project_info.json come sorgente unica di verità per tutta la pipeline
+    → Scripts/info_manager.py · update_trascrizione() / update_traduzione() / update_tts().
+      I tre script di pipeline (trascrivi_audio.py, traduci_testo.py, tts_dubbing.py) aggiornano
+      le sezioni corrispondenti in project_info.json dopo ogni elaborazione, con i dati per track_id.
+      Genera anche project_info.txt tramite generate_info_file() ad ogni aggiornamento.
+
+--- [COMPLETATO] Creazione automatica project_info.json alla creazione e duplicazione progetto
+    → Scripts/Regista.py · _init_project_info(). Chiamata dopo create_project e duplicate_project;
+      genera project_info.json e project_info.txt nella root del nuovo progetto con i settings correnti.
+
+--- [COMPLETATO] Storico rinomina progetto in project_info.json e project_info.txt
+    → Scripts/info_manager.py · record_rename(). Ogni rename aggiunge una entry {da, a, data}
+      nella sezione storico_rinomina del JSON; il TXT include la sezione resa leggibile.
+
+--- [COMPLETATO] Suite di test automatizzati
+    → Test/test_locale_and_workspace.py · 141 test.
+      Copertura: validità JSON tutte le 8 locale, is_yes() per 8 lingue, offer_open_folder,
+      WorkspaceManager CRUD (create/duplicate/rename/delete con trash), source_importer._find_projects_referencing,
+      InfoManager pipeline sections (update_trascrizione/update_traduzione/update_tts + generate_info_file).
+
+--- [COMPLETATO] Backup per lingua (Translated/Transcripts)
+    → core/archive_pruner.py · prune_by_language(). Raggruppa archivi per lingua via metadata.json,
+      applica limite max_per_lang per gruppo indipendentemente dal limite globale.
+
+--- [COMPLETATO] Ottimizzazione consumo TTS per engine
+    → Scripts/monitoraggio_consumo.py · ConsumoTTS(motore=...). Billing separato Google/Azure
+      con percentuale e costo stimato per motore. Visibile nel menu TTS (tts_menu.py).
+
+--- [COMPLETATO] Centralizzazione gestione lingue in settings_manager (parte principale)
+    → Sezione 3, Architettura Settings. interface_lang gestito via settings_persistent.json
+      + merge_and_rebuild. Campi sessione derivati da interface_lang ad ogni avvio; non persistono.
+
+
+
+===============================================
+= SEZIONE 6 – Script Structure Template      =
+===============================================
+
+Questa sezione contiene il template strutturale ufficiale per tutti gli script del progetto.
+Tutti i nuovi script Python e PowerShell devono seguire questa struttura.
+
+# =========================================================
+# SCRIPT NAME
+# =========================================================
+# Description:
+#   Short description of the script purpose.
+#   High-level behavior overview.
+#
+# Inputs:
+#   - input1: description
+#   - input2: description
+#
+# Outputs:
+#   - output1: description
+#
+# Notes:
+#   - runtime constraints
+#   - dependencies
+#   - execution context
+#
+# Language rule:
+#   All comments must be written in English.
+# =========================================================
+
+
+# =========================================================
+# 1. IMPORTS / DEPENDENCIES – Load modules and libraries
+# =========================================================
+# 1.1 Core imports
+# 1.2 External libraries
+# 1.3 Project modules
+
+
+# =========================================================
+# 2. CONFIGURATION – Paths, settings, constants
+# =========================================================
+# 2.1 Root path / environment setup
+# 2.2 Settings loading
+# 2.3 Constants / global variables
+
+
+# =========================================================
+# 3. UTILITIES – Helper / support functions
+# =========================================================
+# 3.1 function_name – short description (one line)
+# 3.2 function_name – short description (one line)
+
+
+# =========================================================
+# 4. CORE LOGIC – Main functional processing
+# =========================================================
+# 4.1 function_name – short description (one line)
+# 4.2 function_name – short description (one line)
+
+
+# =========================================================
+# 5. MAIN EXECUTION – Entry point and flow control
+# =========================================================
+# 5.1 main() – main entry point
+# 5.2 execution flow
+# 5.3 exit / return handling

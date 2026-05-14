@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "language_preset_from_installer": false,
+  "interface_lang": "it",
+  "model": "small",
+  "voice": null,
+  "show_confirmations": true,
+  "max_backups": 10,
+  "max_backups_per_language": 10,
+  "max_folders_size_gb": 5,
+  "use_trash": false,
+  "MIN_SILENCE_LEN_MS": 12000,
+  "SILENCE_THRESH_DBFS": -30,
+  "KEEP_SILENCE_MS": 150,
+  "Translation_Target_Lang": "en",
+  "Dubbing_Lang": "en"
+}

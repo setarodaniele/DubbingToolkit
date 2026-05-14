@@ -1,0 +1,421 @@
+﻿==============================
+UNUSED KEYS - CLUSTER REPORT
+==============================
+
+[AllDependenciesInstalled] (1)
+AllDependenciesInstalled
+
+[API] (3)
+API_chek_DubbingNotEnabled
+API_chek_NoActiveProvider
+API_chek_TTSAvailable
+
+[BACKUP] (14)
+BACKUP_ASK_CLEAN
+BACKUP_COMPLETED
+BACKUP_ERROR_COPY
+BACKUP_FILE_COPIED
+BACKUP_INFO_CURRENT_PER_LANGUAGE
+BACKUP_INFO_CURRENT_TOTAL
+BACKUP_INFO_PER_LANGUAGE_LIMIT
+BACKUP_INFO_TOTAL_LIMIT
+BACKUP_PER_LANGUAGE_REMOVED
+BACKUP_PROMPT_CLEAN_WORKDIR
+BACKUP_SIZE_CONFIRM_CLEAN
+BACKUP_WARNING_MAX_SIZE
+BACKUP_WORKDIR_CLEANED
+BACKUP_WORKING_DIR_CLEANED
+
+[Checkpoint0Continue] (1)
+Checkpoint0Continue
+
+[Checkpoint0Passed] (1)
+Checkpoint0Passed
+
+[Checkpoint1VenvActivated] (1)
+Checkpoint1VenvActivated
+
+[Checkpoint1VenvNotFound] (1)
+Checkpoint1VenvNotFound
+
+[DependenciesStart] (1)
+DependenciesStart
+
+[DUBBING] (41)
+DUBBING_AudioMerged
+DUBBING_AzureCredentialsMissing
+DUBBING_BaseFolderNotFound
+DUBBING_Completed
+DUBBING_ConsumptionExceeded
+DUBBING_ConsumptionWarning
+DUBBING_DetectedLanguage
+DUBBING_EmptySRT
+DUBBING_EngineSelected
+DUBBING_FileSelectorTitle
+DUBBING_FileTypeSRT
+DUBBING_GoogleCredentialsMissing
+DUBBING_InfoBox_AvailableLangFolders
+DUBBING_InfoBox_Azure
+DUBBING_InfoBox_BaseFolder
+DUBBING_InfoBox_ContentTitle
+DUBBING_InfoBox_CurrentMonth
+DUBBING_InfoBox_EnginesAvailable
+DUBBING_InfoBox_Google
+DUBBING_InfoBox_LastFolder
+DUBBING_InfoBox_SelectedEngine
+DUBBING_InfoBox_SelectedVoice
+DUBBING_InfoBox_Title
+DUBBING_InfoBox_TotalFolders
+DUBBING_InvalidChoice
+DUBBING_LabelManual
+DUBBING_LastFolder
+DUBBING_ManualSelect
+DUBBING_MultipleSRTFound
+DUBBING_NoVoiceConfigured
+DUBBING_NoWorkSRT
+DUBBING_NoWorkSRT_ManualSelect
+DUBBING_ProjectInfoLangNotFound
+DUBBING_ProjectInfoNotFound
+DUBBING_SelectedFile
+DUBBING_SelectFromList
+DUBBING_SelectionCancelled
+DUBBING_SelectLanguage
+DUBBING_SelectLanguageManual
+DUBBING_SRTNotFound
+DUBBING_VoiceSelected
+
+[EnsurePython] (13)
+EnsurePython_ExecutionFailed
+EnsurePython_FolderExists
+EnsurePython_InstallerDownloading
+EnsurePython_InstallerExists
+EnsurePython_InstallFailed
+EnsurePython_Installing
+EnsurePython_IntegrityFailed
+EnsurePython_IntegrityOk
+EnsurePython_LauncherStop
+EnsurePython_Ready
+EnsurePython_Reinstalling
+EnsurePython_Removing
+EnsurePython_Start
+
+[ESTR] (22)
+ESTR_backup_created
+ESTR_backup_files
+ESTR_existing_files_found
+ESTR_files_in_folder
+ESTR_info_bit_depth
+ESTR_info_channels
+ESTR_info_codec
+ESTR_info_duration
+ESTR_info_extraction_date
+ESTR_info_extraction_folder
+ESTR_info_format
+ESTR_info_no_tracks_extracted
+ESTR_info_sample_rate
+ESTR_info_size
+ESTR_info_total_size
+ESTR_info_track
+ESTR_info_track_count
+ESTR_info_video_file
+ESTR_overwrite_prompt
+ESTR_reference_file_label
+ESTR_video_not_found
+ESTR_warning_track_info
+
+[FILE] (1)
+FILE_SELECTOR_NoFilesFound
+
+[GWL] (1)
+GWL_MissingOutputPath
+
+[INFO] (4)
+INFO_Generali
+INFO_Generali_note
+INFO_Generali_totale_MB
+INFO_Generali_ultima_modifica
+
+[InstallDependencies] (2)
+InstallDependencies_DownloadingPackageToCache
+InstallDependencies_InstallingPackageFromCache
+
+[InstallError] (1)
+InstallError
+
+[InstallInfo] (1)
+InstallInfo
+
+[InstallOK] (1)
+InstallOK
+
+[menu] (8)
+menu_lingue_TTS_language_list_item
+menu_lingue_TTS_manual_input_hint
+menu_voices_header_context
+menu_voices_header_filters
+menu_voices_header_usage_azure
+menu_voices_header_usage_google
+menu_voices_jump_live
+menu_voices_row
+
+[MonitorEnd] (1)
+MonitorEnd
+
+[MonitorStarting] (1)
+MonitorStarting
+
+[MonitorTimeout] (1)
+MonitorTimeout
+
+[PackageInstalled] (1)
+PackageInstalled
+
+[PkgCorrupted] (1)
+PkgCorrupted
+
+[PkgMissing] (1)
+PkgMissing
+
+[PkgReinstall] (1)
+PkgReinstall
+
+[PkgReinstallFail] (1)
+PkgReinstallFail
+
+[PkgReinstallOK] (1)
+PkgReinstallOK
+
+[PkgValidationCompare] (1)
+PkgValidationCompare
+
+[PkgValidationFail] (1)
+PkgValidationFail
+
+[PkgValidationOK] (1)
+PkgValidationOK
+
+[PkgValidationStart] (1)
+PkgValidationStart
+
+[PkgVersionMismatch] (1)
+PkgVersionMismatch
+
+[POST] (10)
+POST_PROC_CLEAN_TEXT
+POST_PROC_CUSTOM_PARAMS
+POST_PROC_INVALID_FILE
+POST_PROC_MERGE_SHORT
+POST_PROC_REPORT
+POST_PROC_RESPECT_PAUSES
+POST_PROC_SAVED
+POST_PROC_SILENCE_DETECT
+POST_PROC_SPLIT_LONG
+POST_PROC_USAGE
+
+[PythonInstalled] (1)
+PythonInstalled
+
+[PythonInstallerDownloading] (1)
+PythonInstallerDownloading
+
+[PythonInstallerExists] (1)
+PythonInstallerExists
+
+[PythonInstallFailed] (1)
+PythonInstallFailed
+
+[PythonInstalling] (1)
+PythonInstalling
+
+[PythonInstallPause] (1)
+PythonInstallPause
+
+[PythonInterpreterPath] (1)
+PythonInterpreterPath
+
+[RegistaMenuTitle] (1)
+RegistaMenuTitle
+
+[RegistaTTSMissingKeys] (1)
+RegistaTTSMissingKeys
+
+[RegistaVideoBackup] (1)
+RegistaVideoBackup
+
+[RegistaVideoCopied] (1)
+RegistaVideoCopied
+
+[RegistaVideoDefault] (1)
+RegistaVideoDefault
+
+[RegistaVideoInvalid] (1)
+RegistaVideoInvalid
+
+[RegistaVideoNoOther] (1)
+RegistaVideoNoOther
+
+[RegistaVideoOutOfRange] (1)
+RegistaVideoOutOfRange
+
+[RegistaVideoSelect] (1)
+RegistaVideoSelect
+
+[RegistaVideoUsingDefault] (1)
+RegistaVideoUsingDefault
+
+[RegistaWhisperPrompt] (1)
+RegistaWhisperPrompt
+
+[RegistaWhisperSelection] (1)
+RegistaWhisperSelection
+
+[Reset] (6)
+Reset_Aborted
+Reset_Confirm1
+Reset_Confirm2
+Reset_HardSettingsReset
+Reset_SettingsOverwrite
+Reset_VenvDeactivate
+
+[SETTINGS] (13)
+SETTINGS_CONFIRM_RESET
+SETTINGS_CREATING_DIR
+SETTINGS_CREATING_FILE
+SETTINGS_CURRENT
+SETTINGS_FILE_CORRUPT
+SETTINGS_INCOMPLETE
+SETTINGS_INVALID_LANG_CHOICE
+SETTINGS_LOADED
+SETTINGS_MAX_BACKUPS
+SETTINGS_RESET
+SETTINGS_SHOW_CONFIRMATIONS
+SETTINGS_WIZARD_END
+SETTINGS_WIZARD_START
+
+[TRANSCR] (57)
+TRANSCR_audio_extracted
+TRANSCR_audio_input
+TRANSCR_check_work_srt
+TRANSCR_confirm_language_prompt
+TRANSCR_default_prompt
+TRANSCR_detected_language
+TRANSCR_detecting_language
+TRANSCR_info_audio_duration
+TRANSCR_info_audio_file
+TRANSCR_info_audio_origin_title
+TRANSCR_info_audio_size
+TRANSCR_info_datetime
+TRANSCR_info_detected_lang
+TRANSCR_info_device
+TRANSCR_info_num_segments
+TRANSCR_info_num_segments_raw
+TRANSCR_info_num_segments_work
+TRANSCR_info_section_output
+TRANSCR_info_section_params
+TRANSCR_info_segmentation_params
+TRANSCR_info_selected_lang
+TRANSCR_info_spoken_language
+TRANSCR_info_srt_file
+TRANSCR_info_srt_raw
+TRANSCR_info_srt_seg
+TRANSCR_info_srt_work
+TRANSCR_info_title
+TRANSCR_info_transcribe_language
+TRANSCR_info_transcript_folder
+TRANSCR_info_transcription_title
+TRANSCR_info_unified_created
+TRANSCR_info_whisper_model
+TRANSCR_invalid_file
+TRANSCR_lang_suggestion_average
+TRANSCR_lang_suggestion_good
+TRANSCR_lang_suggestion_high
+TRANSCR_lang_suggestion_low
+TRANSCR_manual_file_dialog_title
+TRANSCR_manual_file_selected
+TRANSCR_manual_selection_cancelled
+TRANSCR_manual_selection_not_implemented
+TRANSCR_no_audio_found
+TRANSCR_no_extraction_folders
+TRANSCR_press_enter_continue
+TRANSCR_segmented_file_not_created
+TRANSCR_select_audio_header
+TRANSCR_SELFTEST_continue_prompt
+TRANSCR_SELFTEST_default_model
+TRANSCR_SELFTEST_language_cancelled
+TRANSCR_SELFTEST_last_model
+TRANSCR_SELFTEST_title
+TRANSCR_silence_segmenting
+TRANSCR_transcribing
+TRANSCR_transcription_saved
+TRANSCR_using_device
+TRANSCR_work_copy_created
+TRANSCR_work_file_created
+
+[TRANSLATE] (28)
+TRANSLATE_back_or_cancel
+TRANSLATE_cancel_menu
+TRANSLATE_choose_another_srt
+TRANSLATE_compat_fail
+TRANSLATE_current_folder
+TRANSLATE_file_selected
+TRANSLATE_info_box_compatibility
+TRANSLATE_input_missing
+TRANSLATE_language_not_set
+TRANSLATE_language_updated
+TRANSLATE_manual_file_dialog_title
+TRANSLATE_manual_selection_cancelled
+TRANSLATE_menu_title
+TRANSLATE_models_file_not_found
+TRANSLATE_no_model_loadable
+TRANSLATE_no_transcript_folders
+TRANSLATE_no_transcripts_found
+TRANSLATE_not_available_suffix
+TRANSLATE_option_auto_latest
+TRANSLATE_option_select_manual
+TRANSLATE_option_select_transcript
+TRANSLATE_pair_compatible
+TRANSLATE_pair_not_supported
+TRANSLATE_select_folder
+TRANSLATE_select_language
+TRANSLATE_select_srt
+TRANSLATE_source_language
+TRANSLATE_target_language
+
+[TrascrizioneMenuTitle] (1)
+TrascrizioneMenuTitle
+
+[tts] (5)
+tts_google_error_synthesis
+tts_google_invalid_format
+tts_google_synthesis_completed
+TTS_Google_unsupported_format
+tts_google_unsupported_provider
+
+[TTSConfigMenu] (17)
+TTSConfigMenu_Alert_AvvioDoppiaggio
+TTSConfigMenu_Alert_SceltaNonValida
+TTSConfigMenu_Alert_SelezionareTuttiParametri
+TTSConfigMenu_FileSRT_NonSelezionato
+TTSConfigMenu_FormatoOutput_NonSelezionato
+TTSConfigMenu_Input_SelezionaOpzione
+TTSConfigMenu_Menu_AvvioDoppiaggio
+TTSConfigMenu_Menu_Exit
+TTSConfigMenu_Menu_FileSRT
+TTSConfigMenu_Menu_FormatoOutput
+TTSConfigMenu_Menu_MotoreTTS
+TTSConfigMenu_Menu_Voce
+TTSConfigMenu_MotoreTTS_NonSelezionato
+TTSConfigMenu_Stato
+TTSConfigMenu_StatoNonPronto
+TTSConfigMenu_StatoPronto
+TTSConfigMenu_Voce_NonSelezionata
+
+[utils] (1)
+utils_TTS_SynthesisCompleted
+
+[VenvInvalidGeneric] (1)
+VenvInvalidGeneric
+
+[VenvSkipNonMainVenv] (1)
+VenvSkipNonMainVenv
+

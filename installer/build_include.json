@@ -1,0 +1,74 @@
+[
+  {
+    "source": "Installation\\Python311",
+    "dest": "Installation\\Python311",
+    "type": "full"
+  },
+  {
+    "source": "Scripts",
+    "dest": "Scripts",
+    "type": "full"
+  },
+  {
+    "source": "locale",
+    "dest": "locale",
+    "type": "full"
+  },
+  {
+    "source": "core",
+    "dest": "core",
+    "type": "full"
+  },
+  {
+    "source": "ps",
+    "dest": "ps",
+    "type": "full"
+  },
+  {
+    "source": "Docs",
+    "dest": "Docs",
+    "type": "full"
+  },
+  {
+    "source": "Settings\\settings_default.json",
+    "dest": "Settings",
+    "type": "file"
+  },
+  {
+    "source": "Settings\\settings_persistent_default.json",
+    "dest": "Settings",
+    "type": "file"
+  },
+  {
+    "source": "credentials",
+    "dest": "credentials",
+    "type": "sanitized",
+    "include": [
+      "*template*.json",
+      "README.md"
+    ]
+  },
+  {
+    "source": "StartDubbing.bat",
+    "dest": ".",
+    "type": "file"
+  },
+  {
+    "source": "Billing\\tts_voices_cost.json",
+    "dest": "Billing",
+    "type": "file"
+  },
+  {
+    "source": "Tools\\7zr.exe",
+    "dest": "Tools",
+    "type": "file"
+  },
+  {
+    "source": "voices",
+    "dest": "voices",
+    "type": "sanitized",
+    "include": [
+      "*.json"
+    ]
+  }
+]

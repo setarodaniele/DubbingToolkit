@@ -1,0 +1,282 @@
+﻿{
+    "summary":  {
+                    "total_placeholders":  82,
+                    "total_keys":  486
+                },
+    "key_map":  {
+                    "Launcher_RunningVenvManager":  "{0}",
+                    "VenvCleanup":  "{0}",
+                    "LanguageSelected":  "{0}",
+                    "TRANSCR_lang_mismatch_alert":  [
+                                                        "{manual}",
+                                                        "{detected}"
+                                                    ],
+                    "SETTINGS_LANGUAGE_UPDATED":  "{0}",
+                    "INFO_Audio_Traccia":  "{0}",
+                    "menu_lingue_TTS_error_voices_file_missing":  "{path}",
+                    "BACKUP_OLD_REMOVED":  "{old_path}",
+                    "FILE_SELECTOR_Option_FromFolder":  "{folder_name}",
+                    "TRANSCR_file_selected":  "{file}",
+                    "TRANSCR_no_audio_files_in_folder":  "{folder}",
+                    "TRANSCR_lang_selected_from_settings":  "{lang}",
+                    "TRANSLATE_completed":  "{file}",
+                    "TRANSLATE_info_box_target":  "{lang}",
+                    "TTS_Google_synthesis_error":  [
+                                                       "{}",
+                                                       "{}"
+                                                   ],
+                    "TRANSCR_loading_model":  "{model}",
+                    "API_chek_FileNotFound":  "{file_path}",
+                    "InstallingPackage":  [
+                                              "{0}",
+                                              "{1}",
+                                              "{2}"
+                                          ],
+                    "GWL_RetrievalError":  "{0}",
+                    "TRANSLATE_model_load_failed":  "{model}",
+                    "Launcher_Python311Path":  "{0}",
+                    "RegistaNotFound":  "{0}",
+                    "VenvActivated":  "{0}",
+                    "RunningInstallDependencies":  "{0}",
+                    "InstallDependencies_ProcessingRequirements":  "{0}",
+                    "PackageFailed":  "{0}",
+                    "VenvActivating":  "{0}",
+                    "VenvCleanupFail":  "{0}",
+                    "INFO_Error_SavingJSON":  [
+                                                  "{path}",
+                                                  "{errore}"
+                                              ],
+                    "INFO_Error_FFProbe":  [
+                                               "{path}",
+                                               "{errore}"
+                                           ],
+                    "cred_mgr_unsupported_provider":  "{0}",
+                    "INFO_Error_WritingInfo":  [
+                                                   "{path}",
+                                                   "{errore}"
+                                               ],
+                    "cred_mgr_missing_keys":  "{0}",
+                    "VenvCreatingPath":  "{0}",
+                    "BACKUP_SIZE_WARNING":  [
+                                                "{size}",
+                                                "{limit}"
+                                            ],
+                    "GWL_WriteError":  "{0}",
+                    "VenvValidationSuccess":  "{0}",
+                    "menu_lingue_TTS_selected_language":  "{lang}",
+                    "TRANSCR_transcription_saved_work":  "{file}",
+                    "TRANSCR_transcribing_raw":  "{file}",
+                    "TRANSCR_processing_device":  "{device}",
+                    "BACKUP_ERROR_REMOVING":  "{old_path}",
+                    "TRANSLATE_lang_not_supported":  [
+                                                         "{src}",
+                                                         "{tgt}"
+                                                     ],
+                    "menu_lingue_TTS_error_language_not_supported":  "{lang}",
+                    "TTS_Azure_synthesis_error":  [
+                                                      "{}",
+                                                      "{}"
+                                                  ],
+                    "cred_mgr_file_not_found":  "{0}",
+                    "TRANSCR_selected_language":  "{lang}",
+                    "INFO_Error_ReadingWAV":  [
+                                                  "{path}",
+                                                  "{errore}"
+                                              ],
+                    "Launcher_Python310Path":  "{0}",
+                    "FILE_SELECTOR_error_generic":  "{error}",
+                    "InstallDependenciesNotFound":  "{0}",
+                    "RegistaFound":  "{0}",
+                    "API_chek_MissingKeys":  "{keys}",
+                    "TRANSCR_whisper_json_missing":  "{path}",
+                    "TRANSLATE_using_device":  "{device}",
+                    "TTS_Google_file_not_found":  "{}",
+                    "INFO_Error_ReadingAudio":  [
+                                                    "{path}",
+                                                    "{errore}"
+                                                ],
+                    "TTS_Azure_file_not_found":  "{}",
+                    "TTS_Azure_unsupported_format":  "{}",
+                    "INFO_Error_LoadingJSON":  [
+                                                   "{path}",
+                                                   "{errore}"
+                                               ],
+                    "TRANSCR_select_audio_in_folder":  "{folder}",
+                    "FILE_SELECTOR_NoFoldersFound":  "{folder_name}",
+                    "TRANSLATE_info_box_source":  "{lang}",
+                    "TRANSCR_transcription_saved_seg":  "{file}",
+                    "TRANSCR_language_analysis":  "{file}",
+                    "BACKUP_ERROR_SOURCE_MISSING":  "{source_dir}",
+                    "TRANSLATE_loading_model":  "{model}",
+                    "VenvCreated":  "{0}",
+                    "TRANSCR_transcription_saved_raw":  "{file}"
+                },
+    "global_usage":  {
+                         "{manual}":  1,
+                         "{folder_name}":  2,
+                         "{keys}":  1,
+                         "{file}":  7,
+                         "{device}":  2,
+                         "{errore}":  6,
+                         "{src}":  1,
+                         "{tgt}":  1,
+                         "{detected}":  1,
+                         "{old_path}":  2,
+                         "{}":  7,
+                         "{0}":  25,
+                         "{source_dir}":  1,
+                         "{path}":  8,
+                         "{2}":  1,
+                         "{folder}":  2,
+                         "{lang}":  6,
+                         "{limit}":  1,
+                         "{model}":  3,
+                         "{error}":  1,
+                         "{size}":  1,
+                         "{1}":  1,
+                         "{file_path}":  1
+                     },
+    "placeholder_to_keys":  {
+                                "{manual}":  [
+                                                 "TRANSCR_lang_mismatch_alert"
+                                             ],
+                                "{folder_name}":  [
+                                                      "FILE_SELECTOR_Option_FromFolder",
+                                                      "FILE_SELECTOR_NoFoldersFound"
+                                                  ],
+                                "{keys}":  [
+                                               "API_chek_MissingKeys"
+                                           ],
+                                "{file}":  [
+                                               "TRANSCR_file_selected",
+                                               "TRANSCR_language_analysis",
+                                               "TRANSCR_transcribing_raw",
+                                               "TRANSCR_transcription_saved_raw",
+                                               "TRANSCR_transcription_saved_seg",
+                                               "TRANSCR_transcription_saved_work",
+                                               "TRANSLATE_completed"
+                                           ],
+                                "{device}":  [
+                                                 "TRANSCR_processing_device",
+                                                 "TRANSLATE_using_device"
+                                             ],
+                                "{errore}":  [
+                                                 "INFO_Error_LoadingJSON",
+                                                 "INFO_Error_SavingJSON",
+                                                 "INFO_Error_ReadingWAV",
+                                                 "INFO_Error_ReadingAudio",
+                                                 "INFO_Error_FFProbe",
+                                                 "INFO_Error_WritingInfo"
+                                             ],
+                                "{src}":  [
+                                              "TRANSLATE_lang_not_supported"
+                                          ],
+                                "{tgt}":  [
+                                              "TRANSLATE_lang_not_supported"
+                                          ],
+                                "{detected}":  [
+                                                   "TRANSCR_lang_mismatch_alert"
+                                               ],
+                                "{old_path}":  [
+                                                   "BACKUP_OLD_REMOVED",
+                                                   "BACKUP_ERROR_REMOVING"
+                                               ],
+                                "{}":  [
+                                           "TTS_Azure_unsupported_format",
+                                           "TTS_Azure_synthesis_error",
+                                           "TTS_Azure_synthesis_error",
+                                           "TTS_Azure_file_not_found",
+                                           "TTS_Google_file_not_found",
+                                           "TTS_Google_synthesis_error",
+                                           "TTS_Google_synthesis_error"
+                                       ],
+                                "{0}":  [
+                                            "LanguageSelected",
+                                            "Launcher_Python311Path",
+                                            "Launcher_Python310Path",
+                                            "InstallDependencies_ProcessingRequirements",
+                                            "RegistaFound",
+                                            "RegistaNotFound",
+                                            "RunningInstallDependencies",
+                                            "InstallDependenciesNotFound",
+                                            "Launcher_RunningVenvManager",
+                                            "VenvValidationSuccess",
+                                            "VenvCleanup",
+                                            "VenvCleanupFail",
+                                            "VenvCreatingPath",
+                                            "VenvCreated",
+                                            "VenvActivating",
+                                            "VenvActivated",
+                                            "InstallingPackage",
+                                            "PackageFailed",
+                                            "INFO_Audio_Traccia",
+                                            "SETTINGS_LANGUAGE_UPDATED",
+                                            "cred_mgr_file_not_found",
+                                            "cred_mgr_missing_keys",
+                                            "cred_mgr_unsupported_provider",
+                                            "GWL_RetrievalError",
+                                            "GWL_WriteError"
+                                        ],
+                                "{source_dir}":  [
+                                                     "BACKUP_ERROR_SOURCE_MISSING"
+                                                 ],
+                                "{path}":  [
+                                               "INFO_Error_LoadingJSON",
+                                               "INFO_Error_SavingJSON",
+                                               "INFO_Error_ReadingWAV",
+                                               "INFO_Error_ReadingAudio",
+                                               "INFO_Error_FFProbe",
+                                               "INFO_Error_WritingInfo",
+                                               "TRANSCR_whisper_json_missing",
+                                               "menu_lingue_TTS_error_voices_file_missing"
+                                           ],
+                                "{2}":  [
+                                            "InstallingPackage"
+                                        ],
+                                "{folder}":  [
+                                                 "TRANSCR_select_audio_in_folder",
+                                                 "TRANSCR_no_audio_files_in_folder"
+                                             ],
+                                "{lang}":  [
+                                               "TRANSCR_selected_language",
+                                               "TRANSCR_lang_selected_from_settings",
+                                               "TRANSLATE_info_box_source",
+                                               "TRANSLATE_info_box_target",
+                                               "menu_lingue_TTS_selected_language",
+                                               "menu_lingue_TTS_error_language_not_supported"
+                                           ],
+                                "{limit}":  [
+                                                "BACKUP_SIZE_WARNING"
+                                            ],
+                                "{model}":  [
+                                                "TRANSCR_loading_model",
+                                                "TRANSLATE_loading_model",
+                                                "TRANSLATE_model_load_failed"
+                                            ],
+                                "{error}":  [
+                                                "FILE_SELECTOR_error_generic"
+                                            ],
+                                "{size}":  [
+                                               "BACKUP_SIZE_WARNING"
+                                           ],
+                                "{1}":  [
+                                            "InstallingPackage"
+                                        ],
+                                "{file_path}":  [
+                                                    "API_chek_FileNotFound"
+                                                ]
+                            },
+    "types":  {
+                  "BRACE_INDEX":  [
+                                      "{0}",
+                                      "{2}",
+                                      "{1}"
+                                  ],
+                  "C_STYLE":  [
+
+                              ],
+                  "MUSTACHE":  [
+
+                               ]
+              }
+}

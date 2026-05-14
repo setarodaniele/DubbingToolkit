@@ -1,0 +1,82 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Log
+*.log
+
+# Virtual environment
+venv/
+
+# Credenziali API (NON devono essere pubblicate)
+credentials/*.json
+!credentials/*.template.json
+
+# Cartelle temporanee (ovunque nel progetto)
+Temp/
+Temp2/
+temp2/
+temp/
+cache/
+nppBackup/
+Backup/
+
+
+# Dati runtime billing (ricreati automaticamente da monitoraggio_consumo.py)
+Billing/consumo_tts.json
+
+# Cartelle dati operativi (legacy root-level)
+Audio_Extracted/
+Audio_Input/
+Transcripts/
+Translated/
+Dubbed/
+Subtitles/
+Output/
+Logs/
+
+# Workspace runtime data (created by ensure_structure() on first run)
+Workspace/
+
+# Installazioni locali Python
+Installation/
+
+# Repository modelli locali
+Repository/
+
+# Build
+installer/build_payload/
+
+# Video sorgente
+Video_Input/
+
+# FFmpeg binaries (troppo grandi per GitHub)
+Tools/ffmpeg-7.1.1-full_build/bin/ffmpeg.exe
+Tools/ffmpeg-7.1.1-full_build/bin/ffprobe.exe
+Tools/ffmpeg-7.1.1-full_build/bin/ffplay.exe
+
+# Archivi runtime (scaricati da RuntimeDependencies.ps1, non versionati)
+voices-archive.zip
+voices-archive.7z
+voices/*.zip
+voices/*.tar.gz
+voices/*.7z
+
+# Log operativi voices (auto-generati, specifici della macchina locale)
+voices/synthesis_log.txt
+
+.claude/
+claude.md
+
+# Settings locali (specifici della macchina, non versionati)
+Settings/settings.json
+Settings/settings_persistent.json
+
+# Copie e backup locali di RecapDubbing
+RecapDubbing - Copia.txt
+RecapDubbing*.bak
+
+# Diario di sviluppo personale (locale)
+SESSIONE.md

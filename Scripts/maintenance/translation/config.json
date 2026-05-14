@@ -1,0 +1,14 @@
+{
+  "source_language": "it",
+  "target_languages": ["es"],
+  "source_file": "Locale\\Active\\it.json",
+  "output_folder": "output",
+  "use_cache": true,
+  "cache_dir": "Scripts\\maintenance\\translation\\cache",
+  "cache_file": "translation_cache.json",
+  "placeholder_map": "Scripts\\maintenance\\translation\\Report\\it\\placeholder_map.json",
+  "report_folder": "Scripts\\maintenance\\translation\\Report",
+  "backup_folder": "Scripts\\maintenance\\translation\\backup",
+  "scan_paths": ["Scripts", "core", "ps"],
+  "exclude_patterns": ["\\Temp\\", "\\temp\\", "\\__pycache__\\", "\\venv\\", "\\output\\", "\\.git\\", "\\maintenance\\translation\\"]
+}
