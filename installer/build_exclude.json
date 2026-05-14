@@ -17,6 +17,7 @@
   "CLAUDE.md",
   "PERSONAL-GIT-RULES.md",
   "SESSIONE.md",
+  "README.md",
   "Scripts\\maintenance\\translation",
   "Scripts\\maintenance\\GenerateWhisperLangs.py",
   "Scripts\\maintenance\\build_translation_pairs.py",

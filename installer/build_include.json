@@ -55,6 +55,11 @@
     "type": "file"
   },
   {
+    "source": "Readme.txt",
+    "dest": ".",
+    "type": "file"
+  },
+  {
     "source": "Billing\\tts_voices_cost.json",
     "dest": "Billing",
     "type": "file"
