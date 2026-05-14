@@ -2,7 +2,8 @@
   {
     "source": "Installation\\Python311",
     "dest": "Installation\\Python311",
-    "type": "full"
+    "type": "full",
+    "protected": true
   },
   {
     "source": "Scripts",
