@@ -106,6 +106,7 @@ def sintetizza_azure_batch(
 
     # =================== BLOCCO 5.4: ciclo di sintesi ===================
     file_ext = "mp3" if output_format == "mp3" else "wav"
+    total_entries = len(entries)
 
     for i_entry, entry in enumerate(entries):
         _, testo, start_time, end_time = entry
@@ -113,6 +114,9 @@ def sintetizza_azure_batch(
         start_str = start_time.replace(":", "-").replace(",", "-")
         end_str = end_time.replace(":", "-").replace(",", "-")
         file_output = os.path.join(output_dir, f"{start_str}_{end_str}.{file_ext}")
+
+        # Contatore avanzamento (sovrascrive la riga corrente)
+        print(f"\r[{i_entry + 1}/{total_entries}] {messages.TTS_Azure_synthesizing}...", end="", flush=True)
 
         # Pausa inter-request (salta la prima)
         if i_entry > 0:
@@ -201,6 +205,8 @@ def sintetizza_azure_batch(
                              traceback=_tb_module.format_exc())
 
             break  # esce dal loop retry (successo o errore definitivo loggato)
+
+    print()  # newline finale dopo il contatore
 
 # =================== BLOCCO 6: main CLI ===================
 if __name__ == "__main__":

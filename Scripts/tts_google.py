@@ -68,7 +68,11 @@ def sintetizza_google_batch(
         raise ValueError(messages.TTS_Google_no_entries)
 
     # =================== BLOCCO 5.3: ciclo di sintesi ===================
-    for entry in entries:
+    total_entries = len(entries)
+
+    for i_entry, entry in enumerate(entries):
+        print(f"\r[{i_entry + 1}/{total_entries}] {messages.TTS_Google_synthesizing}...", end="", flush=True)
+
         filename, testo, start_time, end_time = entry
 
         # Formattazione nome file: sostituisco : e , con -
@@ -113,6 +117,8 @@ def sintetizza_google_batch(
                                   "language_code": language_code,
                                   "api_latency_ms": _api_ms, "duration_ms": _dur_ms},
                          traceback=_tb_module.format_exc())
+
+    print()  # newline finale dopo il contatore
 
 # =================== BLOCCO 6: main CLI ===================
 if __name__ == "__main__":
