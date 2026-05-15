@@ -27,7 +27,12 @@ $interface_langKey = $Settings.interface_lang
 $MessagesFile = Join-Path $LocaleFolder ("Active\$interface_langKey.json")
 $Messages = Get-Content $MessagesFile -Encoding UTF8 | ConvertFrom-Json
 
-Write-Host $Messages.InstallDependencies_Starting -ForegroundColor Blue
+# Initialize logging module
+$psDir = Join-Path $RootFolder 'ps'
+Import-Module (Join-Path $psDir 'Logging.psm1') -Force
+Set-Messages $Messages
+
+Write-Log "InstallDependencies_Starting"
 
 # ----------------------------------------
 # 2 Attiva l'ambiente virtuale
@@ -53,7 +58,7 @@ foreach ($line in $InstalledNowRaw) {
 # 4 Funzione di installazione pacchetto singolo
 # ----------------------------------------
 function Install-Package-DabbingToolkit($pkg, $extraIndexLink) {
-    Write-Host ($Messages.InstallingPackage -f $Index, $Total, $pkg) -ForegroundColor Cyan
+    Write-Log "InstallingPackage" "INFO" @($Index, $Total, $pkg)
 
     $InstallArgs = @(
         "--disable-pip-version-check"
@@ -67,31 +72,8 @@ function Install-Package-DabbingToolkit($pkg, $extraIndexLink) {
 
     try {
         & "$VenvPath\Scripts\pip.exe" install @InstallArgs
-
-        # --- DEBUG: mostra il pacchetto corrente
-        Write-Host "DEBUG: pkg dal requirements.txt -> '$pkg'" -ForegroundColor Yellow
-
-        # --- Lettura installati
-        $InstalledNowRaw = & "$VenvPath\Scripts\pip.exe" list --format=freeze
-        $InstalledNow = $InstalledNowRaw -split "`r?`n" | ForEach-Object { $_.Trim() }
-
-        # --- Normalizzazione nome pacchetto
-        $pkgName = $pkg.Split("==")[0].ToLower()
-        $Found = $InstalledNow | Where-Object {
-            $installedName = ($_ -split "==")[0].ToLower()
-            $installedName = $installedName -replace '[-_]', ''
-            $normalizedPkg = $pkgName -replace '[-_]', ''
-            $installedName -eq $normalizedPkg
-        }
-
-        if ($Found) {
-            Write-Host "DEBUG: Pacchetto trovato -> $($Found -join ', ')" -ForegroundColor Green
-        } else {
-            Write-Host "DEBUG: Pacchetto NON trovato" -ForegroundColor Red
-        }
-
     } catch {
-        Write-Host ($Messages.PackageFailed -f $pkg) -ForegroundColor Red
+        Write-Log "PackageFailed" "ERROR" @($pkg)
         exit 1
     }
 }
@@ -101,7 +83,7 @@ function Install-Package-DabbingToolkit($pkg, $extraIndexLink) {
 # ----------------------------------------
 foreach ($ReqFile in $RequirementsFiles) {
     #Write-Host ("----------------------------------------") -ForegroundColor DarkGray
-    Write-Host ($Messages.InstallDependencies_ProcessingRequirements -f $ReqFile) -ForegroundColor Blue
+    Write-Log "InstallDependencies_ProcessingRequirements" "INFO" @($ReqFile)
 
     # 5a. Lettura contenuto requirements
     $ReqContent = Get-Content $ReqFile | Where-Object {
@@ -141,7 +123,6 @@ foreach ($ReqFile in $RequirementsFiles) {
 
     $Total = $ToInstall.Count
     if ($Total -eq 0) {
-        Write-Host $Messages.InstallDependencies_AllDependenciesAlreadyInstalled -ForegroundColor Green
         continue
     }
 
@@ -161,5 +142,4 @@ foreach ($ReqFile in $RequirementsFiles) {
     }
 }
 
-Write-Host $Messages.InstallDependencies_AllDependenciesInstalled -ForegroundColor Green
-Write-Host $Messages.DependenciesFinished -ForegroundColor Blue
+Write-Log "DependenciesFinished"

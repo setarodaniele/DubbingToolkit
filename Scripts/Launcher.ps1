@@ -21,10 +21,10 @@ $InstallationRoot = $RootFolder
 # Splash screen / project introduction
 # --------------------------------------------------
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "         DUBBING TOOLKIT PROJECT          " -ForegroundColor Cyan
+Write-Host "           DUBBING TOOLKIT                " -ForegroundColor Cyan
 Write-Host "------------------------------------------" -ForegroundColor Cyan
-Write-Host "Author: Daniele" -ForegroundColor Green
-Write-Host "Version: 1.0" -ForegroundColor Green
+Write-Host "Small Software House" -ForegroundColor Green
+Write-Host "Version: v0.1 Alpha" -ForegroundColor Green
 Write-Host "This tool automates video transcription" -ForegroundColor Yellow
 Write-Host "and dubbing for tutorial projects." -ForegroundColor Yellow
 Write-Host "==========================================" -ForegroundColor Cyan
@@ -96,8 +96,6 @@ if ($LangPresetByInstaller) {
     $MessagesFile = Join-Path $ActiveFolder "$interface_langKey.json"
     $Messages     = Get-Content $MessagesFile -Encoding UTF8 | ConvertFrom-Json
     $ReadableLang = $LanguagesMap.$interface_langKey
-    Write-Host ($Messages.Launcher_LangFromInstaller -f $ReadableLang) -ForegroundColor Green
-    Write-Host $Messages.Launcher_LangChangeHint -ForegroundColor Cyan
 } else {
     # Normal flow — show language selection menu
     if ($AvailableLangs -contains $DefaultLang) {
@@ -117,17 +115,31 @@ if ($LangPresetByInstaller) {
     $MessagesFile      = Join-Path $ActiveFolder "$interface_langKey.json"
     $Messages          = Get-Content $MessagesFile -Encoding UTF8 | ConvertFrom-Json
     $ReadableLang      = $LanguagesMap.$interface_langKey
-    Write-Host ($Messages.LanguageSelected -f $ReadableLang) -ForegroundColor Green
+}
+
+# --------------------------------------------------
+# Initialize logging module (requires $Messages to be loaded)
+# --------------------------------------------------
+$psDir = Join-Path $RootFolder 'ps'
+Import-Module (Join-Path $psDir 'Logging.psm1') -Force
+Set-Messages $Messages
+
+# Now we can use Write-Log for all subsequent output
+if ($LangPresetByInstaller) {
+    Write-Log "Launcher_LangFromInstaller" "INFO" @($ReadableLang)
+    Write-Log "Launcher_LangChangeHint"
+} else {
+    Write-Log "LanguageSelected" "INFO" @($ReadableLang)
 }
 
 # --------------------------------------------------
 # Checkpoint 0: Antivirus containment check
 # --------------------------------------------------
-Write-Host $Messages.Checkpoint0 -ForegroundColor Blue
-Write-Host $Messages.Checkpoint0Warning -ForegroundColor Yellow
-Write-Host $Messages.Checkpoint0Step1 -ForegroundColor Yellow
-Write-Host $Messages.Checkpoint0Step2 -ForegroundColor Yellow
-Write-Host $Messages.Checkpoint0Step3 -ForegroundColor Yellow
+Write-Log "Checkpoint0"
+Write-Log "Checkpoint0Warning" "WARN"
+Write-Log "Checkpoint0Step1" "WARN"
+Write-Log "Checkpoint0Step2" "WARN"
+Write-Log "Checkpoint0Step3" "WARN"
 [void][System.Console]::ReadLine()
 
 # --------------------------------------------------
@@ -165,13 +177,12 @@ if (-not $?) {
 # --------------------------------------------------
 # PORTABLE PYTHON PATHS (Direct assignment, no checks)
 # --------------------------------------------------
-Write-Host ($Messages.Launcher_UsingPortablePython) -ForegroundColor Cyan
+Write-Log "Launcher_UsingPortablePython"
 # Python 3.11 – Main Project
 $Python311Folder = Join-Path $InstallationRoot 'Installation\Python311'
-Write-Host ($Messages.Launcher_Python311Path -f $Python311Folder) -ForegroundColor Green
-# Python 3.10 – WhisperX Dedicated
+Write-Log "Launcher_Python311Path" "INFO" @($Python311Folder)
+# Python 3.10 – WhisperX Dedicated (reserved for future use, currently disabled)
 $Python310Folder = Join-Path $InstallationRoot 'Installation\Python310'
-Write-Host ($Messages.Launcher_Python310Path -f $Python310Folder) -ForegroundColor Green
 # Assign to variables for later use in the script
 $Python311Exe = Join-Path $Python311Folder 'python.exe'
 $Python310Exe = Join-Path $Python310Folder 'python.exe'
@@ -188,12 +199,12 @@ if (Test-Path $RuntimeDepsScript) {
     $depsOk = Invoke-RuntimeDependencyCheck
     Write-Host ""
     if ($depsOk) {
-        Write-Host $Messages.RD_LauncherDepsOk -ForegroundColor Green
+        Write-Log "RD_LauncherDepsOk"
     } else {
-        Write-Host $Messages.RD_LauncherDepsWarn -ForegroundColor Yellow
+        Write-Log "RD_LauncherDepsWarn" "WARN"
     }
 } else {
-    Write-Host $Messages.RD_LauncherScriptNotFound -ForegroundColor Yellow
+    Write-Log "RD_LauncherScriptNotFound" "WARN"
 }
 
 
@@ -202,22 +213,22 @@ if (Test-Path $RuntimeDepsScript) {
 # --------------------------------------------------
 $savedPythonPath = $env:PYTHONPATH
 $env:PYTHONPATH  = $RootFolder
-& $Python311Exe -c "from core.workspace_manager import WorkspaceManager; WorkspaceManager.get_active().ensure_structure()"
+& $Python311Exe -c "from core.workspace_manager import WorkspaceManager; ws = WorkspaceManager.get_active(); ws.ensure_structure() if ws else None"
 $env:PYTHONPATH  = $savedPythonPath
 if ($?) {
-    Write-Host $Messages.Launcher_WorkspaceReady -ForegroundColor Green
+    Write-Log "Launcher_WorkspaceReady"
 } else {
-    Write-Host $Messages.Launcher_WorkspaceWarn -ForegroundColor Yellow
+    Write-Log "Launcher_WorkspaceWarn" "WARN"
 }
 
 
 # ==================================================================
-# MAIN FUNCTION - UPDATED
+# MAIN FUNCTION
 # ==================================================================
 function Start-Launcher {
     param([int]$Attempt = 1, [int]$MaxAttempts = 2)
 
-    Write-Host ("== {0} (Attempt {1}) ==" -f $Messages.LauncherStart, $Attempt) -ForegroundColor Blue
+    Write-Host ("== {0} (Attempt {1}) ==" -f (Get-Message "LauncherStart"), $Attempt) -ForegroundColor Blue
 
     # --------------------------------------------------
     # VENV PATHS
@@ -230,51 +241,52 @@ function Start-Launcher {
     # --------------------------------------------------
     $VenvManagerPath = Join-Path $RootFolder 'Scripts\VenvManager.ps1'
     $InstallDepsPath = Join-Path $RootFolder 'Scripts\InstallDependencies.ps1'
-    $ReqMain = Join-Path $RootFolder 'Scripts\requirements.txt'	
-	
+    $ReqMain = Join-Path $RootFolder 'Scripts\requirements.txt'
+
     if (Test-Path $VenvManagerPath) {
-        Write-Host ($Messages.Launcher_RunningVenvManager -f $VenvManagerPath) -ForegroundColor Cyan
-        Write-Host $Messages.Checkpoint1 -ForegroundColor Blue
-        $VenvCreated = [bool](& $VenvManagerPath -VenvPath $VenvPath -PythonExe $Python311Exe)				
-        if (-not $VenvCreated) { Write-Host $Messages.VenvManagerFailed -ForegroundColor Red; exit 1 }
-    } else { 
-        Write-Host ($Messages.VenvManagerNotFound -f $VenvManagerPath) -ForegroundColor Red
+        Write-Log "Launcher_RunningVenvManager" "INFO" @($VenvManagerPath)
+        Write-Log "Checkpoint1"
+        $VenvCreated = [bool](& $VenvManagerPath -VenvPath $VenvPath -PythonExe $Python311Exe)
+        if (-not $VenvCreated) { Write-Log "VenvManagerFailed" "ERROR"; exit 1 }
+    } else {
+        Write-Log "VenvManagerNotFound" "ERROR" @($VenvManagerPath)
         exit 1
     }
+
     # Dependencies installation - Main Project
     if (Test-Path $InstallDepsPath) {
-        Write-Host ($Messages.RunningInstallDependencies -f $InstallDepsPath) -ForegroundColor Cyan
-        Write-Host $Messages.Checkpoint1_5 -ForegroundColor Blue
+        Write-Log "RunningInstallDependencies" "INFO" @($InstallDepsPath)
+        Write-Log "Checkpoint1_5"
         & $InstallDepsPath -VenvPath $VenvPath -RequirementsFile $ReqMain
-        if (-not $?) { Write-Host $Messages.InstallDependenciesFailed -ForegroundColor Red; exit 1 }
-    } else { 
-        Write-Host ($Messages.InstallDependenciesNotFound -f $InstallDepsPath) -ForegroundColor Red
+        if (-not $?) { Write-Log "InstallDependenciesFailed" "ERROR"; exit 1 }
+    } else {
+        Write-Log "InstallDependenciesNotFound" "ERROR" @($InstallDepsPath)
         exit 1
     }
 
 
-    # --------------------------------------------------
+	# --------------------------------------------------
 	# VENV MANAGEMENT – WhisperX Project (temporarily disabled)
 	# --------------------------------------------------
-	# $ReqWhisper = Join-Path $RootFolder 'Scripts\requirementsX.txt'	
+	# $ReqWhisper = Join-Path $RootFolder 'Scripts\requirementsX.txt'
 	#
 	# if (Test-Path $VenvManagerPath) {
-	#     Write-Host ($Messages.Launcher_RunningVenvManager -f $VenvManagerPath) -ForegroundColor Cyan
-	#     Write-Host $Messages.Checkpoint1 -ForegroundColor Blue
+	#     Write-Log "Launcher_RunningVenvManager" "INFO" @($VenvManagerPath)
+	#     Write-Log "Checkpoint1"
 	#     $VenvCreatedWhisper = [bool](& $VenvManagerPath -VenvPath $VenvPathWhisper -PythonExe $Python310Exe)
-	#     if (-not $VenvCreatedWhisper) { Write-Host $Messages.VenvManagerFailed -ForegroundColor Red; exit 1 }
-	# } else { 
-	#     Write-Host ($Messages.VenvManagerNotFound -f $VenvManagerPath) -ForegroundColor Red
+	#     if (-not $VenvCreatedWhisper) { Write-Log "VenvManagerFailed" "ERROR"; exit 1 }
+	# } else {
+	#     Write-Log "VenvManagerNotFound" "ERROR" @($VenvManagerPath)
 	#     exit 1
 	# }
 	# Dependencies installation – WhisperX
 	# if (Test-Path $InstallDepsPath) {
-	#     Write-Host ($Messages.RunningInstallDependencies -f $InstallDepsPath) -ForegroundColor Cyan
-	#     Write-Host $Messages.Checkpoint1_5 -ForegroundColor Blue
+	#     Write-Log "RunningInstallDependencies" "INFO" @($InstallDepsPath)
+	#     Write-Log "Checkpoint1_5"
 	#     & $InstallDepsPath -VenvPath $VenvPathWhisper -RequirementsFile $ReqWhisper
-	#     if (-not $?) { Write-Host $Messages.InstallDependenciesFailed -ForegroundColor Red; exit 1 }
-	# } else { 
-	#     Write-Host ($Messages.InstallDependenciesNotFound -f $InstallDepsPath) -ForegroundColor Red
+	#     if (-not $?) { Write-Log "InstallDependenciesFailed" "ERROR"; exit 1 }
+	# } else {
+	#     Write-Log "InstallDependenciesNotFound" "ERROR" @($InstallDepsPath)
 	#     exit 1
 	# }
 
@@ -285,38 +297,39 @@ function Start-Launcher {
 	# diventerà uno script di servizio nella cartella maintenance.
 	# In futuro, se necessario, possiamo riattivarlo nel Launcher.
 	# ==================================================================
-    # --------------------------------------------------
+	# --------------------------------------------------
 	# Generate Whisper languages JSON (only for main venv)
 	# --------------------------------------------------
 	#$OutputJSON = Join-Path $LocaleFolder 'whisper_languages.json'
 	#if (-not (Test-Path $OutputJSON)) {
-	#	Write-Host $Messages.GWL_CreatingWhisperLangJSON -ForegroundColor Cyan
+	#	Write-Log "GWL_CreatingWhisperLangJSON"
 	#	$WhisperLangScript = Join-Path $RootFolder 'Scripts\GenerateWhisperLangs.py'
 	#	& "$VenvPath\Scripts\python.exe" $WhisperLangScript $OutputJSON
-	#	if ($?) { Write-Host $Messages.GWL_WhisperLangJSONCreated -ForegroundColor Green }
-	#	else { Write-Host $Messages.GWL_WhisperLangJSONError -ForegroundColor Red }
+	#	if ($?) { Write-Log "GWL_WhisperLangJSONCreated" }
+	#	else { Write-Log "GWL_WhisperLangJSONError" "ERROR" }
 	#} else {
-	#	Write-Host $Messages.GWL_WhisperLangJSONExists -ForegroundColor Yellow
+	#	Write-Log "GWL_WhisperLangJSONExists" "WARN"
 	#}
-
 
 
     # --------------------------------------------------
     # Run Regista.py
     # --------------------------------------------------
-    Write-Host $Messages.Checkpoint2 -ForegroundColor Blue
+    Write-Log "Checkpoint2"
     $registaPath = Join-Path $PSScriptRoot 'Regista.py'
     $env:NUMBA_DISABLE_JIT = "1"
 
     if (Test-Path $registaPath) {
-        Write-Host ($Messages.RegistaFound -f $registaPath) -ForegroundColor Green
+        Write-Log "RegistaFound" "INFO" @($registaPath)
         $venvPython = Join-Path $VenvPath 'Scripts\python.exe'
         & $venvPython $registaPath
-        if ($?) { Write-Host $Messages.RegistaSuccess -ForegroundColor Green }
-        else { Write-Host $Messages.RegistaError -ForegroundColor Red }
-    } else { Write-Host ($Messages.RegistaNotFound -f $registaPath) -ForegroundColor Red }
+        if ($?) { Write-Log "RegistaSuccess" }
+        else { Write-Log "RegistaError" "ERROR" }
+    } else {
+        Write-Log "RegistaNotFound" "ERROR" @($registaPath)
+    }
 
-    Write-Host $Messages.LauncherEnd -ForegroundColor Blue
+    Write-Log "LauncherEnd"
 }
 
 
@@ -337,7 +350,7 @@ function Test-LockAlive {
 
 if (Test-Path $LockFile) {
     if (Test-LockAlive $LockFile) {
-        Write-Host $Messages.Launcher_AlreadyRunning -ForegroundColor Yellow
+        Write-Log "Launcher_AlreadyRunning" "WARN"
         Stop-Transcript -ErrorAction SilentlyContinue | Out-Null
         exit 1
     }
@@ -365,7 +378,7 @@ if (Test-Path $LockFile) {
 
     if (-not $wasVoluntaryClose) {
         # Lock left by a real crash or forced kill — warn the user
-        Write-Host $Messages.Launcher_StaleLockRemoved -ForegroundColor Yellow
+        Write-Log "Launcher_StaleLockRemoved" "WARN"
     }
     # Voluntary close (X button, Ctrl+C, menu exit): silent
 }

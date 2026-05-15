@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "language_preset_from_installer": false,
-  "interface_lang": "it",
+  "interface_lang": "en",
   "model": "small",
   "voice": null,
   "show_confirmations": true,

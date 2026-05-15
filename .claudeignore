@@ -1,0 +1,28 @@
+# Cartelle escluse dall'analisi di Claude Code
+
+# Backup Notepad++
+nppBackup/
+
+# Cartelle temporanee (tutte le varianti maiuscolo/minuscolo, ovunque)
+[Tt]emp/
+[Tt]emp2/
+**/[Tt]emp/
+**/[Tt]emp2/
+
+# Log operativi
+Logs/
+
+# Ambienti virtuali Python
+venv/
+venv_whisperX/
+
+# Installazioni Python locali (escluse da ricerche; usabili per esecuzione)
+Installation/
+
+# Controllo versione e configurazione AI
+.git/
+.claude/
+
+# Repository e build
+Repository/
+installer/build_payload/

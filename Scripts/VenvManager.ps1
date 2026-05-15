@@ -209,7 +209,7 @@ function Create-VenvFolder {
 # ==================================================================
 # 8) FULL REPAIR
 # ==================================================================
-$EnableSafetyPrompt = $true  # disattivare in produzione
+$EnableSafetyPrompt = $false
 
 function Repair-VenvFull {
     param([string]$Path)

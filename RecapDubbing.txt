@@ -17,12 +17,15 @@ DubbingToolkit/
 │  ├─ api_check.py                 - Verifica presenza e validità delle credenziali API TTS locali.
 │  ├─ archive_pruner.py            - Pruning archivi con anteprima dry-run e conferma utente (doppia per lo stage dubbed).
 │  ├─ credentials_manager.py       - Gestione centralizzata delle credenziali API dei provider TTS.
+│  ├─ error_reporter.py            - Sistema segnalazione errori: crea ZIP con log di sessione, apre mailto: per invio al developer.
 │  ├─ file_selector.py             - Gestione selezione file tramite interfaccia.
 │  ├─ input_parsing.py             - Parsing e validazione degli input.
+│  ├─ logger.py                    - Logger di sessione strutturato: scrive eventi (INFO/WARN/ERROR) in JSON con exit_reason alla chiusura.
 │  ├─ messages.py                  - Gestione centralizzata dei messaggi localizzati.
 │  ├─ source_importer.py           - Dialog importazione file esterni nel workspace (copia/sposta/esterno) con size, spazio disco e warning cross-project.
 │  ├─ ui_colors.py                 - Definizione palette colori per output in console.
 │  ├─ ui_printer.py                - Funzioni per stampare messaggi su console con formattazione.
+│  ├─ update_checker.py            - Verifica disponibilità aggiornamenti confrontando la versione locale con GitHub Releases.
 │  ├─ utils_settings.py            - Utility centralizzate per lettura/scrittura settings (write_json_atomic, merge_and_rebuild).
 │  ├─ utils_tts.py                 - Funzioni di utilità condivise per operazioni TTS.
 │  └─ workspace_manager.py         - Gestione workspace attivo (solo progetti nominati), struttura stage, rotazione e pruning archivi.
@@ -386,10 +389,36 @@ Gestione File di Lavoro (modello Workspace)
 = SEZIONE 3 – Stato Attuale / Funzionamento =
 =============================================
 
+- Versione attuale: v0.1 Alpha
+- Lingua default interfaccia: en (inglese)
 - Flusso operativo principale:
   StartDubbing.bat → Launcher.ps1 → Regista.py → pipeline TTS / trascrizione / traduzione
 - Il sistema è composto da una pipeline ibrida Python + PowerShell orchestrata dal launcher principale.
 - Le regole strutturali del codice, la messaggistica e la localizzazione sono definite nella Sezione 2.
+
+Error Reporting
+---------------
+- core/error_reporter.py gestisce la segnalazione errori al developer.
+- Tre modalità: manuale (tasto R nel menu), automatico all'uscita se ci sono errori, silenzioso su crash.
+- Il report ZIP include gli ultimi 3 log di sessione JSON + report testuale.
+- Apertura client email tramite mailto: (nessuna credenziale SMTP richiesta).
+- Email developer: SmallSoftwareHouse@gmail.com
+
+Crash Detection vs Voluntary Close
+------------------------------------
+- Regista.py distingue tre percorsi di uscita:
+    normal         → uscita dal menu (tasto X)
+    window_closed  → chiusura X della finestra console (SetConsoleCtrlHandler)
+    crash          → eccezione non gestita (Exception)
+- exit_reason viene scritto nel log di sessione JSON da logger.close_session().
+- Launcher.ps1 legge il log di sessione più recente al riavvio per decidere
+  se mostrare il warning "crash rilevato" (solo se exit_reason non è normal/window_closed).
+
+Logging PowerShell (sistema unificato)
+---------------------------------------
+- Tutti gli script PowerShell runtime usano ps/Logging.psm1 (Write-Log) + ps/Messages.psm1.
+- Script allineati: VenvManager.ps1, Launcher.ps1, InstallDependencies.ps1.
+- RuntimeDependencies.ps1 usa Write-RDLog proprio (con file logging aggiuntivo); allineamento futuro.
 
 Pipeline (stage e percorsi Workspace)
 --------------------------------------
@@ -630,6 +659,26 @@ Nota generale
 --- [COMPLETATO] Centralizzazione gestione lingue in settings_manager (parte principale)
     → Sezione 3, Architettura Settings. interface_lang gestito via settings_persistent.json
       + merge_and_rebuild. Campi sessione derivati da interface_lang ad ogni avvio; non persistono.
+
+--- [COMPLETATO] Sistema error reporter
+    → core/error_reporter.py. ZIP con log sessione + mailto:. Tre modalità: manuale (tasto R),
+      automatico all'uscita, silenzioso su crash. SESSIONE.md 2026-05-14 parte 2.
+
+--- [COMPLETATO] Crash detection vs voluntary close
+    → Scripts/Regista.py + Scripts/Launcher.ps1. Tre exit_reason (normal/window_closed/crash)
+      scritti nel log sessione. Launcher legge log recente invece del lock file.
+      SESSIONE.md 2026-05-14 parte 2.
+
+--- [COMPLETATO] Alpha readiness review e fix catena di avvio
+    → Launcher.ps1: splash screen, null guard workspace, Python310 display.
+      VenvManager.ps1: $EnableSafetyPrompt = $false.
+      InstallDependencies.ps1: rimossi DEBUG e messaggi ridondanti.
+      SESSIONE.md 2026-05-14 parte 2.
+
+--- [COMPLETATO] Allineamento sistema logging PowerShell
+    → Launcher.ps1 e InstallDependencies.ps1 ora usano Write-Log (ps/Logging.psm1).
+      Import-Module + Set-Messages dopo caricamento lingua.
+      SESSIONE.md 2026-05-14 parte 2.
 
 
 

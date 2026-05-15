@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "interface_lang": "it",
+  "interface_lang": "en",
   "model": "small",
   "voice": null,
   "show_confirmations": true,
