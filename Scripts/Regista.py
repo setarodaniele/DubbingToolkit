@@ -662,7 +662,7 @@ def main(messages):
     # =====================================================
     # Verifica aggiornamenti
     # =====================================================
-    _GIST_URL = "https://gist.githubusercontent.com/SmallSoftwareHouse/48337de1f302edb88bf952ddf51c2755/raw/version.json"
+    _GIST_URL = "https://gist.githubusercontent.com/SmallSoftwareHouse/48337de1f302edb88bf952ddf51c2755/raw/dubbing_toolkit_version.json"
     _SETTINGS_DEFAULT = Path.cwd() / "Settings" / "settings_default.json"
     try:
         with _SETTINGS_DEFAULT.open("r", encoding="utf-8") as _f:

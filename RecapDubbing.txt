@@ -636,6 +636,21 @@ Nota generale
 - Nota: la qualità del file SRT dipende da Whisper + traduzione; WhisperX e segmentazione avanzata
   riducono le allucinazioni a monte. Questa validazione è un layer difensivo aggiuntivo.
 
+--- Versioning venv e dipendenze Python (upgrade safety)
+- Prevedere un meccanismo di versioning del venv per garantire compatibilità dopo gli upgrade.
+- Proposta: campo venv_version in settings_default.json o file dedicato.
+- VenvManager.ps1 confronta la versione del venv installato con quella richiesta dalla release corrente.
+- Se non coincidono → ricrea il venv automaticamente prima di avviare il runtime.
+- Obiettivo: evitare incompatibilità silenziose dopo aggiornamenti che cambiano requirements.txt.
+
+--- Versioning dei tool runtime (ffmpeg, voices, dipendenze scaricate)
+- Prevedere un file manifest_versions.json (o simile) con le versioni attese dei tool runtime.
+- Componenti da versionare: ffmpeg, voices_output, eventualmente altri asset scaricati.
+- RuntimeDependencies.ps1 confronta la versione locale con quella attesa prima di procedere al download.
+- Se la versione è già aggiornata → skip del download (nessuna rete, nessun tempo perso).
+- Obiettivo: rendere il sistema di runtime dependencies idempotente e consapevole della versione.
+- Note: estendere lo stesso concetto a qualsiasi tool o dataset futuro scaricato a runtime.
+
 --- File recenti nel selettore file
 - Al momento il dialog si apre sul Desktop (default); tkinter non supporta la vista "Recenti" di Windows.
 - Implementare una lista interna di file usati di recente per categoria (video, audio).
