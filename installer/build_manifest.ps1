@@ -29,18 +29,19 @@ $ManifestPath = Join-Path $ManifestDir "payload_manifest.json"
 
 $DefaultEntries = @(
     # -- System: cartelle complete
-    [ordered]@{ path="Installation";     type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="Tools";            type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="core";             type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="locale";           type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="ps";               type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="Scripts";          type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="Settings";         type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="Docs";             type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
-    [ordered]@{ path="Workspace";        type="system"; install=$false; create_empty=$true;  recursive=$false; clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Installation"; type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Tools";        type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="core";         type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="locale";       type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="ps";           type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Scripts";      type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Settings";     type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Docs";         type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="voices";       type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
 
     # -- System: file singoli
     [ordered]@{ path="StartDubbing.bat";                            type="system"; install=$true;  create_empty=$false; recursive=$false; clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Readme.txt";                                  type="system"; install=$true;  create_empty=$false; recursive=$false; clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
     [ordered]@{ path="Billing/tts_voices_cost.json";                type="system"; install=$true;  create_empty=$false; recursive=$false; clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
 
     # -- System: file dentro credentials\
@@ -51,15 +52,10 @@ $DefaultEntries = @(
     # -- User: credentials contenitore misto
     [ordered]@{ path="credentials"; type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group=$null; uninstall_conditional=$true },
 
-    # -- User: dati lavoro (gruppo work_files)
-    [ordered]@{ path="Audio_Input";     type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Audio_Extracted"; type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Dubbed";          type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Output";          type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Transcripts";     type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Translated";      type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Video_Input";     type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
-    [ordered]@{ path="Logs";            type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
+    # -- User: workspace e dati di lavoro (gruppo work_files)
+    [ordered]@{ path="Workspace";          type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
+    [ordered]@{ path="Workspace/projects"; type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
+    [ordered]@{ path="Logs";               type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="work_files"; uninstall_conditional=$false },
 
     # -- User: Billing contenitore (gruppo billing)
     [ordered]@{ path="Billing"; type="user"; install=$false; create_empty=$true; recursive=$false; clean_on_upgrade=$false; remove_on_uninstall=$false; uninstall_prompt=$true; uninstall_prompt_default=$false; uninstall_prompt_group="billing"; uninstall_conditional=$false }
@@ -301,7 +297,7 @@ function Invoke-ClassifyItem {
             Write-Host "      Tipo        : user" -ForegroundColor Gray
             Write-Host "      Upgrade     : non toccata - i dati utente vengono preservati" -ForegroundColor Gray
             Write-Host "      Disinstall  : gestita dal checkbox `"File di lavoro`"" -ForegroundColor Gray
-            Write-Host "                    (Audio, Trascrizioni, Traduzioni, ecc.)" -ForegroundColor Gray
+            Write-Host "                    (Workspace, progetti, log, ecc.)" -ForegroundColor Gray
             Write-Host $sep -ForegroundColor DarkGray
             Write-Host "  [2] billing" -ForegroundColor White
             Write-Host "      Tipo        : user" -ForegroundColor Gray

@@ -1,6 +1,6 @@
-{
+﻿{
     "version":  "1.0",
-    "generated":  "2026-05-12",
+    "generated":  "2026-05-15",
     "schema_version":  "1.0",
     "entries":  [
                     {
@@ -95,6 +95,16 @@
                     },
                     {
                         "path":  "StartDubbing.bat",
+                        "type":  "system",
+                        "install":  true,
+                        "create_empty":  false,
+                        "recursive":  false,
+                        "clean_on_upgrade":  true,
+                        "remove_on_uninstall":  true,
+                        "uninstall_prompt":  false
+                    },
+                    {
+                        "path":  "Readme.txt",
                         "type":  "system",
                         "install":  true,
                         "create_empty":  false,

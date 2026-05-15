@@ -278,13 +278,14 @@ if ($DryRun) {
 
             $excluded = if (Test-IsProtected $source $protected) { $false } else { Test-IsExcluded $file $exclude }
 
-            if (-not $excluded -and $type -eq "sanitized" -and $item.include) {
+            if ($type -eq "sanitized" -and $item.include) {
                 $fileName = [System.IO.Path]::GetFileName($file)
                 $allowed = $false
                 foreach ($pattern in $item.include) {
                     if ($fileName -like $pattern) { $allowed = $true; break }
                 }
-                if (-not $allowed) { $excluded = $true }
+                # Whitelist overrides global excludes: if explicitly allowed, force include
+                $excluded = -not $allowed
             }
 
             if (-not $excluded) {
@@ -416,7 +417,8 @@ foreach ($item in $include) {
                 if ($fileName -like $pattern) { $allowed = $true; break }
             }
 
-            if (-not $allowed) { $excluded = $true }
+            # Whitelist overrides global excludes: if explicitly allowed, force include
+            $excluded = -not $allowed
         }
 
         if ($excluded) { continue }
