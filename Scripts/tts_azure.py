@@ -85,6 +85,9 @@ def sintetizza_azure_batch(
     # =================== BLOCCO 5.3: ciclo di sintesi ===================
     file_ext = "mp3" if output_format == "mp3" else "wav"
 
+    _MAX_RETRIES = 3
+    _RETRY_DELAYS = [2, 5, 10]  # secondi di attesa tra i tentativi
+
     for entry in entries:
         _, testo, start_time, end_time = entry
 
@@ -92,61 +95,86 @@ def sintetizza_azure_batch(
         end_str = end_time.replace(":", "-").replace(",", "-")
         file_output = os.path.join(output_dir, f"{start_str}_{end_str}.{file_ext}")
 
-        _op_t0 = time.monotonic()
-        _api_t0 = _op_t0  # fallback se l'eccezione arriva prima della chiamata API
-        try:
-            audio_config = speechsdk.audio.AudioOutputConfig(filename=file_output)
-            synthesizer = speechsdk.SpeechSynthesizer(
-                speech_config=speech_config,
-                audio_config=audio_config
-            )
+        success = False
+        for attempt in range(1, _MAX_RETRIES + 1):
+            _op_t0 = time.monotonic()
+            _api_t0 = _op_t0
+            try:
+                audio_config = speechsdk.audio.AudioOutputConfig(filename=file_output)
+                synthesizer = speechsdk.SpeechSynthesizer(
+                    speech_config=speech_config,
+                    audio_config=audio_config
+                )
 
-            _api_t0 = time.monotonic()
-            result = synthesizer.speak_text_async(testo).get()
-            _api_ms = round((time.monotonic() - _api_t0) * 1000)
-            _dur_ms = round((time.monotonic() - _op_t0) * 1000)
+                _api_t0 = time.monotonic()
+                result = synthesizer.speak_text_async(testo).get()
+                _api_ms = round((time.monotonic() - _api_t0) * 1000)
+                _dur_ms = round((time.monotonic() - _op_t0) * 1000)
 
-            if result.reason != speechsdk.ResultReason.SynthesizingAudioCompleted:
-                cancellation_details = getattr(result, "cancellation_details", None)
-                error_details = getattr(cancellation_details, "error_details", "") if cancellation_details else ""
-                print(messages.TTS_Azure_synthesis_error.format(result.reason, error_details))
-                logger.error("tts_azure", "sintetizza_azure_batch",
-                             f"Azure synthesis failed: {result.reason}",
-                             error_code="TTS_AZURE_SYNTHESIS_FAILED", error_category="API",
-                             is_retryable=True,
-                             context={"voice": voice_name, "text_length": len(testo),
-                                      "reason": str(result.reason),
-                                      "api_latency_ms": _api_ms, "duration_ms": _dur_ms})
-                # Rimuove il file corrotto/vuoto lasciato da Azure SDK per evitare
-                # che tts_merge.py tenti di decodificarlo e vada in crash
+                if result.reason != speechsdk.ResultReason.SynthesizingAudioCompleted:
+                    cancellation_details = getattr(result, "cancellation_details", None)
+                    error_details = getattr(cancellation_details, "error_details", "") if cancellation_details else ""
+                    error_code_azure = str(getattr(cancellation_details, "error_code", "")) if cancellation_details else ""
+                    # Rimuove il file corrotto/vuoto lasciato da Azure SDK
+                    if os.path.exists(file_output):
+                        try:
+                            os.remove(file_output)
+                        except OSError:
+                            pass
+                    if attempt < _MAX_RETRIES:
+                        delay = _RETRY_DELAYS[attempt - 1]
+                        print(messages.TTS_Azure_synthesis_error.format(result.reason, error_details)
+                              + f" — retry {attempt}/{_MAX_RETRIES - 1} in {delay}s...")
+                        time.sleep(delay)
+                        continue
+                    # Tutti i tentativi esauriti
+                    print(messages.TTS_Azure_synthesis_error.format(result.reason, error_details))
+                    logger.error("tts_azure", "sintetizza_azure_batch",
+                                 f"Azure synthesis failed after {attempt} attempts: {result.reason}",
+                                 error_code="TTS_AZURE_SYNTHESIS_FAILED", error_category="API",
+                                 is_retryable=False,
+                                 context={"voice": voice_name, "text_length": len(testo),
+                                          "reason": str(result.reason),
+                                          "azure_error_code": error_code_azure,
+                                          "azure_error_details": error_details,
+                                          "attempts": attempt,
+                                          "api_latency_ms": _api_ms, "duration_ms": _dur_ms})
+                else:
+                    logger.operation("tts_azure", "sintetizza_azure_batch",
+                                     "Azure TTS synthesis completed",
+                                     status="SUCCESS", duration_ms=_dur_ms, api_latency_ms=_api_ms,
+                                     context={"voice": voice_name, "text_length": len(testo),
+                                              "file": os.path.basename(file_output),
+                                              "attempt": attempt})
+                    success = True
+
+            except Exception as e:
+                _api_ms = round((time.monotonic() - _api_t0) * 1000)
+                _dur_ms = round((time.monotonic() - _op_t0) * 1000)
+                # Rimuove il file corrotto/vuoto per evitare crash in tts_merge.py
                 if os.path.exists(file_output):
                     try:
                         os.remove(file_output)
                     except OSError:
                         pass
-            else:
-                logger.operation("tts_azure", "sintetizza_azure_batch",
-                                 "Azure TTS synthesis completed",
-                                 status="SUCCESS", duration_ms=_dur_ms, api_latency_ms=_api_ms,
-                                 context={"voice": voice_name, "text_length": len(testo),
-                                          "file": os.path.basename(file_output)})
+                if attempt < _MAX_RETRIES:
+                    delay = _RETRY_DELAYS[attempt - 1]
+                    print(messages.TTS_Azure_synthesis_error.format("Exception", e)
+                          + f" — retry {attempt}/{_MAX_RETRIES - 1} in {delay}s...")
+                    time.sleep(delay)
+                    continue
+                print(messages.TTS_Azure_synthesis_error.format("Exception", e))
+                logger.error("tts_azure", "sintetizza_azure_batch", str(e),
+                             error_code="TTS_AZURE_EXCEPTION", error_category="API",
+                             is_retryable=False,
+                             context={"voice": voice_name, "text_length": len(testo),
+                                      "attempts": attempt,
+                                      "api_latency_ms": _api_ms, "duration_ms": _dur_ms},
+                             traceback=_tb_module.format_exc())
 
-        except Exception as e:
-            _api_ms = round((time.monotonic() - _api_t0) * 1000)
-            _dur_ms = round((time.monotonic() - _op_t0) * 1000)
-            print(messages.TTS_Azure_synthesis_error.format("Exception", e))
-            logger.error("tts_azure", "sintetizza_azure_batch", str(e),
-                         error_code="TTS_AZURE_EXCEPTION", error_category="API",
-                         is_retryable=True,
-                         context={"voice": voice_name, "text_length": len(testo),
-                                  "api_latency_ms": _api_ms, "duration_ms": _dur_ms},
-                         traceback=_tb_module.format_exc())
-            # Rimuove il file corrotto/vuoto per evitare crash in tts_merge.py
-            if os.path.exists(file_output):
-                try:
-                    os.remove(file_output)
-                except OSError:
-                    pass
+            break  # esce dal loop retry (successo o errore finale loggato)
+
+        _ = success  # usato per debug futuro se necessario
 
 # =================== BLOCCO 6: main CLI ===================
 if __name__ == "__main__":
