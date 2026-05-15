@@ -134,16 +134,34 @@ def prune_with_confirmation(
 
     if needs_confirmation:
         print()
-        # Build reason string from active limits
-        reasons = []
-        if max_count is not None:
-            reasons.append(getattr(messages, "ARCHIVE_PruneReasonCount", "max {0} backups").format(max_count))
+        # Determine which limit(s) actually triggered the pruning
+        archive_dir = ws.stage_archive_dir(stage, track_id)
+        existing = sorted(
+            (p for p in archive_dir.iterdir() if p.is_dir()),
+            key=lambda p: p.name
+        ) if archive_dir.exists() else []
+
+        triggered = []
+        if max_count is not None and len(existing) > max_count:
+            triggered.append(
+                getattr(messages, "ARCHIVE_PruneTriggeredCount",
+                        "backup count: {0}/{1}").format(len(existing), max_count)
+            )
         if max_size_mb is not None:
-            gb = max_size_mb / 1024
-            reasons.append(getattr(messages, "ARCHIVE_PruneReasonSize", "max {0:.1f} GB").format(gb))
-        if reasons:
-            reason_str = getattr(messages, "ARCHIVE_PruneReason", "Reason: {0}").format(", ".join(reasons))
+            total_mb = sum(
+                sum(f.stat().st_size for f in p.rglob("*") if f.is_file()) / (1024 * 1024)
+                for p in existing
+            )
+            if total_mb > max_size_mb:
+                triggered.append(
+                    getattr(messages, "ARCHIVE_PruneTriggeredSize",
+                            "size: {0:.1f}/{1:.1f} GB").format(total_mb / 1024, max_size_mb / 1024)
+                )
+
+        if triggered:
+            reason_str = getattr(messages, "ARCHIVE_PruneReason", "Reason: {0}").format(", ".join(triggered))
             print(Fore.YELLOW + reason_str + Style.RESET_ALL)
+
         print(Fore.YELLOW + messages.ARCHIVE_PruneWillDelete + Style.RESET_ALL)
         for p in to_delete:
             print(Fore.YELLOW + messages.ARCHIVE_PruneFolder.format(p.name) + Style.RESET_ALL)
