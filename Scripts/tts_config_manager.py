@@ -24,6 +24,7 @@ config_status = {
     "provider": None,
     "display_name": None,
     "api_tag": None,
+    "voice_engine": None,
     "output_format": "mp3"
 }
 
