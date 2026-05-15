@@ -587,6 +587,7 @@
   "InfoBoxEmpty": "无进行中的项目",
   "InfoBoxEmptyProject": "暂无数据",
   "RegistaNoProject": "无活动项目。",
+  "RegistaWelcome": "欢迎使用 Dubbing Toolkit！\n请在下方输入名称创建您的第一个项目，\n或按 Enter 使用今天的日期作为默认名称。",
   "RegistaLoadedProject": "项目已加载：{0}",
   "RegistaSelectOrCreate": "选择编号或输入新项目名称（回车: \"{0}\"）：",
   "IMPORT_title": "将文件导入项目？",

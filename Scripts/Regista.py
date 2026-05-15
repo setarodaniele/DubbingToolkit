@@ -331,6 +331,18 @@ def seleziona_o_crea_progetto(messages, settings=None) -> "WorkspaceManager":
         print(Y + " " + getattr(messages, "RegistaNoProject", "Nessun progetto attivo.") + R)
         print(C + "-" * W + R)
 
+        if not projects:
+            welcome = getattr(messages, "RegistaWelcome", "")
+            if welcome:
+                lines = welcome.split("\n")
+                box_w = max(len(l) for l in lines) + 4
+                print()
+                print(C + "╔" + "═" * box_w + "╗" + R)
+                for line in lines:
+                    print(C + "║" + R + "  " + line.ljust(box_w - 2) + C + "║" + R)
+                print(C + "╚" + "═" * box_w + "╝" + R)
+                print()
+
         if projects:
             print(G + " " + getattr(messages, "ProgettiList", "Progetti disponibili:") + R)
             for i, name in enumerate(projects, 1):

@@ -588,6 +588,7 @@
   "InfoBoxEmpty": "Нет активного проекта",
   "InfoBoxEmptyProject": "Данных пока нет",
   "RegistaNoProject": "Нет активного проекта.",
+  "RegistaWelcome": "Добро пожаловать в Dubbing Toolkit!\nЧтобы начать, создайте первый проект, введя имя ниже,\nили нажмите Enter, чтобы использовать сегодняшнюю дату как имя по умолчанию.",
   "RegistaLoadedProject": "Проект загружен: {0}",
   "RegistaSelectOrCreate": "Выберите номер или введите новое имя (Enter: \"{0}\"):",
   "IMPORT_title": "ИМПОРТИРОВАТЬ ФАЙЛ В ПРОЕКТ?",

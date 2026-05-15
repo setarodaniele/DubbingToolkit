@@ -8,6 +8,7 @@ OutputDir=output
 OutputBaseFilename=setup_dubbing_toolkit
 Compression=lzma
 SolidCompression=yes
+ExtraDiskSpaceRequired=16106127360
 SetupIconFile=assets\DubbingToolkit_Studio.ico
 UninstallDisplayIcon={app}\assets\DubbingToolkit_Studio.ico
 ShowLanguageDialog=yes
