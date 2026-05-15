@@ -160,7 +160,7 @@
   "INFO_Error_ReadingAudio": "Audio {path} konnte mit Mutagen nicht gelesen werden: {errore}",
   "INFO_Error_FFProbe": "Fehler beim Lesen des Codecs über ffprobe für {path}: {errore}",
   "INFO_Error_WritingInfo": "Fehler beim Schreiben der Infodatei {path}: {errore}",
-    "INFO_Traduzioni": "=== ÜBERSETZUNGEN ===",
+  "INFO_Traduzioni": "=== ÜBERSETZUNGEN ===",
   "INFO_TTSDoppiaggio": "=== TTS-SYNCHRONISATION ===",
   "INFO_Trascrizione": "=== TRANSKRIPTION ===",
   "INFO_StoricRinomina": "=== UMBENENNUNGSVERLAUF ===",
@@ -614,5 +614,11 @@
   "InfoBoxManyTranscriptions": "Transkriptionen",
   "InfoBoxManyTranslations": "Übersetzungen",
   "InfoBoxManyDubbed": "Synchronisationen",
-  "ProgettiExistsPrompt": "'{0}': Projekt existiert bereits. Öffnen? (j/n)"
+  "ProgettiExistsPrompt": "'{0}': Projekt existiert bereits. Öffnen? (j/n)",
+  "TTS_Azure_synthesizing": "Synthese läuft",
+  "TTS_Google_synthesizing": "Synthese läuft",
+  "ARCHIVE_PruneReason": "Grund: {0}",
+  "ARCHIVE_PruneTriggeredCount": "Backup-Anzahl: {0}/{1}",
+  "ARCHIVE_PruneTriggeredSize": "Größe: {0:.1f}/{1:.1f} GB",
+  "InfoBoxVideoExternal": "extern"
 }

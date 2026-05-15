@@ -160,7 +160,7 @@
   "INFO_Error_ReadingAudio": "无法读取音频 {path}，mutagen：{errore}",
   "INFO_Error_FFProbe": "通过 ffprobe 读取编解码器时出错 {path}: {errore}",
   "INFO_Error_WritingInfo": "写入信息文件 {path} 时出错：{errore}",
-    "INFO_Traduzioni": "=== 翻译 ===",
+  "INFO_Traduzioni": "=== 翻译 ===",
   "INFO_TTSDoppiaggio": "=== TTS 配音 ===",
   "INFO_Trascrizione": "=== 转录 ===",
   "INFO_StoricRinomina": "=== 重命名历史 ===",
@@ -613,5 +613,11 @@
   "InfoBoxManyTranscriptions": "转录",
   "InfoBoxManyTranslations": "翻译",
   "InfoBoxManyDubbed": "配音",
-  "ProgettiExistsPrompt": "'{0}'：项目已存在。打开它？(y/n)"
+  "ProgettiExistsPrompt": "'{0}'：项目已存在。打开它？(y/n)",
+  "TTS_Azure_synthesizing": "正在合成",
+  "TTS_Google_synthesizing": "正在合成",
+  "ARCHIVE_PruneReason": "原因：{0}",
+  "ARCHIVE_PruneTriggeredCount": "备份数量：{0}/{1}",
+  "ARCHIVE_PruneTriggeredSize": "大小：{0:.1f}/{1:.1f} GB",
+  "InfoBoxVideoExternal": "外部"
 }

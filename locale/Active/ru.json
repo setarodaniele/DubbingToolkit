@@ -160,7 +160,7 @@
   "INFO_Error_ReadingAudio": "Не удалось прочитать аудиофайл {path} с mutagen: {errore}",
   "INFO_Error_FFProbe": "Ошибка чтения кодека через ffprobe для {path}: {errore}",
   "INFO_Error_WritingInfo": "Ошибка записи информационного файла {path}: {errore}",
-    "INFO_Traduzioni": "=== ПЕРЕВОДЫ ===",
+  "INFO_Traduzioni": "=== ПЕРЕВОДЫ ===",
   "INFO_TTSDoppiaggio": "=== ОЗВУЧКА TTS ===",
   "INFO_Trascrizione": "=== ТРАНСКРИПЦИЯ ===",
   "INFO_StoricRinomina": "=== ИСТОРИЯ ПЕРЕИМЕНОВАНИЙ ===",
@@ -614,5 +614,11 @@
   "InfoBoxManyTranscriptions": "транскрипций",
   "InfoBoxManyTranslations": "переводов",
   "InfoBoxManyDubbed": "дублирований",
-  "ProgettiExistsPrompt": "'{0}': проект уже существует. Открыть? (д/н)"
+  "ProgettiExistsPrompt": "'{0}': проект уже существует. Открыть? (д/н)",
+  "TTS_Azure_synthesizing": "Синтез речи",
+  "TTS_Google_synthesizing": "Синтез речи",
+  "ARCHIVE_PruneReason": "Причина: {0}",
+  "ARCHIVE_PruneTriggeredCount": "количество копий: {0}/{1}",
+  "ARCHIVE_PruneTriggeredSize": "размер: {0:.1f}/{1:.1f} ГБ",
+  "InfoBoxVideoExternal": "внешний"
 }

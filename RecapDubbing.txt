@@ -477,6 +477,24 @@ Reset
 - Hard reset: stesso del soft + elimina venv/ (rename in venv_old poi delete) + rebuild al prossimo avvio.
   Richiede doppia conferma esplicita con descrizione delle conseguenze in tutte le 8 lingue.
 
+TTS — Robustezza e UX
+----------------------
+- tts_azure.py: retry automatico fino a 3 tentativi con backoff differenziato per error code:
+    TooManyRequests (429) → 30/60/120s
+    ServiceUnavailable/Timeout → 5/15/30s
+    ConnectionFailure/ServiceError → 3-20s
+    AuthenticationFailure/BadRequest/Forbidden → nessun retry (errore permanente)
+  Pausa inter-request 200ms per evitare auto-rate-limiting su SRT con molti segmenti.
+  azure_error_code e azure_error_details loggati nel JSON di sessione.
+- tts_azure.py / tts_google.py: file output corrotto/vuoto rimosso dopo ogni fallimento
+  (Azure SDK crea il file anche se la sintesi fallisce).
+- tts_merge.py: skip difensivo di file vuoti o non decodificabili invece di crash.
+- Contatori avanzamento [N/total] in tts_azure.py, tts_google.py, tts_merge.py.
+- Menu TTS: voce mostrata con engine (es. "A (Neural2)") per disambiguare voci omonime.
+- Menu TTS: archive pruning mostra il limite effettivamente superato (es. "numero backup: 11/10").
+- Regista.py workflow menu: estrazione letta da project_info.json audio_tracce (struttura flat);
+  file video esterno segnalato con "(esterno)" invece del solo [OK].
+
 Runtime Dependencies
 ---------------------
 - ffmpeg 7.1.1: scaricato da GyanD/codexffmpeg GitHub Releases (formato .7z)
@@ -605,6 +623,19 @@ Nota generale
 - Pending post-pubblicazione: consentire override lingua per singoli moduli;
   ridurre duplicazione logica residua tra script.
 
+--- Validazione e revisione file SRT pre-TTS
+- Prima di avviare la sintesi vocale, analizzare il file SRT per rilevare problematiche note:
+  - Segmenti duplicati consecutivi (≥ N volte identici) → allucinazioni Whisper su silenzio/rumore
+  - Loop di traduzione (stessa frase ripetuta N volte all'interno della stessa riga) → artefatto MarianMT
+  - Slot temporali molto corti (< soglia configurabile, es. 800ms) → rischio overflow TTS
+  - Rapporto testo/durata anomalo (testo troppo lungo per lo slot disponibile)
+  - Frammenti di testo irrilevanti (< 3 caratteri, solo punteggiatura, ecc.)
+- Il sistema deve avvisare l'utente prima di procedere, mostrando i problemi raggruppati per tipo.
+- Non auto-corregge: lascia all'utente la scelta se procedere o correggere manualmente il file.
+- Eventuale tool di revisione manuale guidata (mostra segmento + contesto + azione proposta).
+- Nota: la qualità del file SRT dipende da Whisper + traduzione; WhisperX e segmentazione avanzata
+  riducono le allucinazioni a monte. Questa validazione è un layer difensivo aggiuntivo.
+
 --- File recenti nel selettore file
 - Al momento il dialog si apre sul Desktop (default); tkinter non supporta la vista "Recenti" di Windows.
 - Implementare una lista interna di file usati di recente per categoria (video, audio).
@@ -679,6 +710,19 @@ Nota generale
     → Launcher.ps1 e InstallDependencies.ps1 ora usano Write-Log (ps/Logging.psm1).
       Import-Module + Set-Messages dopo caricamento lingua.
       SESSIONE.md 2026-05-14 parte 2.
+
+--- [COMPLETATO] TTS robustezza: crash fix, retry differenziato, progress counter
+    → tts_azure.py: retry fino a 3 tentativi con backoff per error code (TooManyRequests,
+      ServiceUnavailable, ecc.); file corrotto rimosso dopo ogni fallimento synthesis.
+      tts_merge.py: skip difensivo file vuoti/corrotti invece di crash ffmpeg.
+      Contatori [N/total] in tts_azure.py, tts_google.py, tts_merge.py.
+      SESSIONE.md 2026-05-15.
+
+--- [COMPLETATO] UX miglioramenti menu TTS e workflow
+    → Voce TTS mostrata con engine (es. "A (Neural2)"). Archive pruning mostra limite
+      effettivamente superato. Workflow menu: estrazione letta da project_info.json
+      (struttura flat post-refactor); video esterno segnalato con "(esterno)".
+      SESSIONE.md 2026-05-15.
 
 
 
