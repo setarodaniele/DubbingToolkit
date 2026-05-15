@@ -76,10 +76,7 @@ def tts_dubbing(config, settings=None, messages=None):
 
     # Merge audio
     merged_path = output_dir / f"merged.{output_format}"
-    merge_label = getattr(messages, "TTS_MergingAudio", "Merging audio...") if messages else "Merging audio..."
-    print(merge_label, end="", flush=True)
     merge_audio_files(output_dir, merged_path, output_format)
-    print(f"\r{merge_label} done.")
 
     # Write per-track metadata
     _created_at = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")

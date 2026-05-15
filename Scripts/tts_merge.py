@@ -25,7 +25,9 @@ def merge_audio_files(input_dir, output_file, output_format="wav"):
     # Primo file come base; salta file vuoti o corrotti
     combined = None
     skipped = []
-    for audio_file in audio_files:
+    total_files = len(audio_files)
+    for i_file, audio_file in enumerate(audio_files):
+        print(f"\r[{i_file + 1}/{total_files}] Merging...", end="", flush=True)
         if audio_file.stat().st_size == 0:
             skipped.append(audio_file.name)
             continue
@@ -36,6 +38,8 @@ def merge_audio_files(input_dir, output_file, output_format="wav"):
             print(f"[TTS Merge] WARN: saltato file corrotto {audio_file.name}: {e}")
             continue
         combined = seg if combined is None else combined + seg
+
+    print()  # newline finale dopo il contatore
 
     if combined is None:
         raise ValueError(f"Nessun file {output_format} valido trovato in {input_dir}")
