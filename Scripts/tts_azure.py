@@ -82,20 +82,42 @@ def sintetizza_azure_batch(
     if not entries:
         raise ValueError(messages.TTS_Azure_no_entries)
 
-    # =================== BLOCCO 5.3: ciclo di sintesi ===================
+    # =================== BLOCCO 5.3: strategia retry per error code ===================
+    # Ritardi in secondi per ogni tentativo (indice 0 = dopo il 1° fallimento, ecc.)
+    # TooManyRequests (429): attesa lunga, il servizio è sovraccarico
+    # Transient (ServiceUnavailable/Timeout/ConnectionFailure): attesa media
+    # Permanent (AuthenticationFailure/BadRequest/Forbidden): non riprovare
+    _RETRY_POLICY = {
+        "TooManyRequests":      {"retryable": True,  "delays": [30, 60, 120]},
+        "ServiceUnavailable":   {"retryable": True,  "delays": [5,  15,  30]},
+        "ServiceTimeout":       {"retryable": True,  "delays": [5,  15,  30]},
+        "ConnectionFailure":    {"retryable": True,  "delays": [5,  10,  20]},
+        "ServiceError":         {"retryable": True,  "delays": [5,  10,  20]},
+        "RuntimeError":         {"retryable": True,  "delays": [3,   8,  15]},
+        "AuthenticationFailure":{"retryable": False, "delays": []},
+        "BadRequest":           {"retryable": False, "delays": []},
+        "Forbidden":            {"retryable": False, "delays": []},
+    }
+    _DEFAULT_POLICY = {"retryable": True, "delays": [5, 10, 20]}
+    _MAX_RETRIES = 3
+
+    # Piccola pausa tra richieste consecutive per non auto-innescare il rate limit
+    _INTER_REQUEST_DELAY = 0.2  # secondi
+
+    # =================== BLOCCO 5.4: ciclo di sintesi ===================
     file_ext = "mp3" if output_format == "mp3" else "wav"
 
-    _MAX_RETRIES = 3
-    _RETRY_DELAYS = [2, 5, 10]  # secondi di attesa tra i tentativi
-
-    for entry in entries:
+    for i_entry, entry in enumerate(entries):
         _, testo, start_time, end_time = entry
 
         start_str = start_time.replace(":", "-").replace(",", "-")
         end_str = end_time.replace(":", "-").replace(",", "-")
         file_output = os.path.join(output_dir, f"{start_str}_{end_str}.{file_ext}")
 
-        success = False
+        # Pausa inter-request (salta la prima)
+        if i_entry > 0:
+            time.sleep(_INTER_REQUEST_DELAY)
+
         for attempt in range(1, _MAX_RETRIES + 1):
             _op_t0 = time.monotonic()
             _api_t0 = _op_t0
@@ -114,23 +136,30 @@ def sintetizza_azure_batch(
                 if result.reason != speechsdk.ResultReason.SynthesizingAudioCompleted:
                     cancellation_details = getattr(result, "cancellation_details", None)
                     error_details = getattr(cancellation_details, "error_details", "") if cancellation_details else ""
-                    error_code_azure = str(getattr(cancellation_details, "error_code", "")) if cancellation_details else ""
+                    raw_code = getattr(cancellation_details, "error_code", None) if cancellation_details else None
+                    error_code_azure = raw_code.name if raw_code is not None else ""
+
                     # Rimuove il file corrotto/vuoto lasciato da Azure SDK
                     if os.path.exists(file_output):
                         try:
                             os.remove(file_output)
                         except OSError:
                             pass
-                    if attempt < _MAX_RETRIES:
-                        delay = _RETRY_DELAYS[attempt - 1]
+
+                    policy = _RETRY_POLICY.get(error_code_azure, _DEFAULT_POLICY)
+                    can_retry = policy["retryable"] and attempt < _MAX_RETRIES
+
+                    if can_retry:
+                        delay = policy["delays"][attempt - 1]
                         print(messages.TTS_Azure_synthesis_error.format(result.reason, error_details)
-                              + f" — retry {attempt}/{_MAX_RETRIES - 1} in {delay}s...")
+                              + f" [{error_code_azure}] — retry {attempt}/{_MAX_RETRIES - 1} in {delay}s...")
                         time.sleep(delay)
                         continue
-                    # Tutti i tentativi esauriti
+
+                    # Errore definitivo (permanente o tentativi esauriti)
                     print(messages.TTS_Azure_synthesis_error.format(result.reason, error_details))
                     logger.error("tts_azure", "sintetizza_azure_batch",
-                                 f"Azure synthesis failed after {attempt} attempts: {result.reason}",
+                                 f"Azure synthesis failed after {attempt} attempt(s): {result.reason}",
                                  error_code="TTS_AZURE_SYNTHESIS_FAILED", error_category="API",
                                  is_retryable=False,
                                  context={"voice": voice_name, "text_length": len(testo),
@@ -146,7 +175,6 @@ def sintetizza_azure_batch(
                                      context={"voice": voice_name, "text_length": len(testo),
                                               "file": os.path.basename(file_output),
                                               "attempt": attempt})
-                    success = True
 
             except Exception as e:
                 _api_ms = round((time.monotonic() - _api_t0) * 1000)
@@ -158,7 +186,7 @@ def sintetizza_azure_batch(
                     except OSError:
                         pass
                 if attempt < _MAX_RETRIES:
-                    delay = _RETRY_DELAYS[attempt - 1]
+                    delay = _DEFAULT_POLICY["delays"][attempt - 1]
                     print(messages.TTS_Azure_synthesis_error.format("Exception", e)
                           + f" — retry {attempt}/{_MAX_RETRIES - 1} in {delay}s...")
                     time.sleep(delay)
@@ -172,9 +200,7 @@ def sintetizza_azure_batch(
                                       "api_latency_ms": _api_ms, "duration_ms": _dur_ms},
                              traceback=_tb_module.format_exc())
 
-            break  # esce dal loop retry (successo o errore finale loggato)
-
-        _ = success  # usato per debug futuro se necessario
+            break  # esce dal loop retry (successo o errore definitivo loggato)
 
 # =================== BLOCCO 6: main CLI ===================
 if __name__ == "__main__":
