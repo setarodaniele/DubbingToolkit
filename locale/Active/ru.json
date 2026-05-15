@@ -29,6 +29,7 @@
   "VenvManagerEnd": "== VenvManager успешно завершен ==",
   "VenvValidationStart": "Проверка целостности venv...",
   "VenvValidationSuccess": "Venv действителен: {0}",
+  "VenvNotFound": "Виртуальная среда не найдена. Запуск первоначальной настройки...",
   "VenvStructureInvalid": "Неверная структура venv",
   "VenvCfgMismatch": "Несогласованная конфигурация pyvenv.cfg",
   "VenvPythonRuntimeInvalid": "Недопустимая среда выполнения Python",

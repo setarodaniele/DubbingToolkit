@@ -250,6 +250,10 @@ function Regista-Venv {
     Write-Log "VenvValidationStart" "INFO"
 
     $lvl1 = Test-VenvStructure -Path $Path
+    if ($lvl1 -eq "Missing") {
+        Write-Log "VenvNotFound" "WARN"
+        return Repair-VenvFull -Path $Path
+    }
     if ($lvl1 -ne "Valid") {
         Write-Log "VenvStructureInvalid" "ERROR"
         return Repair-VenvFull -Path $Path

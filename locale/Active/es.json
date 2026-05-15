@@ -29,6 +29,7 @@
   "VenvManagerEnd": "== VenvManager finalizado correctamente ==",
   "VenvValidationStart": "Verificando la integridad del entorno virtual...",
   "VenvValidationSuccess": "Venv válido: {0}",
+  "VenvNotFound": "Entorno virtual no encontrado. Iniciando configuración inicial...",
   "VenvStructureInvalid": "Estructura venv no válida",
   "VenvCfgMismatch": "Configuración inconsistente de pyvenv.cfg",
   "VenvPythonRuntimeInvalid": "Entorno de ejecución de Python no válido",

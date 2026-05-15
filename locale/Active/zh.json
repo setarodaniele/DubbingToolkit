@@ -29,6 +29,7 @@
   "VenvManagerEnd": "== VenvManager 已成功完成 ==",
   "VenvValidationStart": "验证虚拟环境的完整性...",
   "VenvValidationSuccess": "虚拟环境有效：{0}",
+  "VenvNotFound": "未找到虚拟环境。正在启动首次配置...",
   "VenvStructureInvalid": "无效的虚拟环境结构",
   "VenvCfgMismatch": "pyvenv.cfg 配置不一致",
   "VenvPythonRuntimeInvalid": "无效的 Python 运行时",
