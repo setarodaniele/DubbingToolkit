@@ -117,6 +117,13 @@ def sintetizza_azure_batch(
                              context={"voice": voice_name, "text_length": len(testo),
                                       "reason": str(result.reason),
                                       "api_latency_ms": _api_ms, "duration_ms": _dur_ms})
+                # Rimuove il file corrotto/vuoto lasciato da Azure SDK per evitare
+                # che tts_merge.py tenti di decodificarlo e vada in crash
+                if os.path.exists(file_output):
+                    try:
+                        os.remove(file_output)
+                    except OSError:
+                        pass
             else:
                 logger.operation("tts_azure", "sintetizza_azure_batch",
                                  "Azure TTS synthesis completed",
@@ -134,6 +141,12 @@ def sintetizza_azure_batch(
                          context={"voice": voice_name, "text_length": len(testo),
                                   "api_latency_ms": _api_ms, "duration_ms": _dur_ms},
                          traceback=_tb_module.format_exc())
+            # Rimuove il file corrotto/vuoto per evitare crash in tts_merge.py
+            if os.path.exists(file_output):
+                try:
+                    os.remove(file_output)
+                except OSError:
+                    pass
 
 # =================== BLOCCO 6: main CLI ===================
 if __name__ == "__main__":
