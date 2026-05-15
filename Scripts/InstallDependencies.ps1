@@ -70,6 +70,12 @@ function Install-Package-DabbingToolkit($pkg, $extraIndexLink) {
         $pkg
     )
 
+    # openai-whisper ships as source tarball and requires build isolation disabled
+    # so it uses the setuptools already installed in the venv instead of a temp env
+    if ($pkg -match '^openai-whisper') {
+        $InstallArgs += "--no-build-isolation"
+    }
+
     if ($extraIndexLink) {
         $InstallArgs += "-f"
         $InstallArgs += $extraIndexLink
