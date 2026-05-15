@@ -169,22 +169,27 @@ def mostra_info_workspace(ws, messages):
         return f"{len(tracks)} {many_label}"
 
     # Collect data
-    video_info  = info.get("video_file", {})
-    video_src   = video_info.get("file_sorgente", "")
-    video_ok    = bool(video_src and Path(video_src).exists())
+    video_info    = info.get("video_file", {})
+    video_src     = video_info.get("file_sorgente", "")
+    video_ok      = bool(video_src and Path(video_src).exists())
+    video_external = video_info.get("source_mode") == "external"
 
     audio_input_dir = ws.root / "audio_input"
     audio_files = sorted(audio_input_dir.iterdir()) if audio_input_dir.is_dir() else []
     audio_files = [f for f in audio_files if f.is_file()]
 
-    extraction   = read_stage("audio_extraction")
+    # audio_extraction uses a flat structure: audio_extraction/current/track_XX.wav
+    # Read track count directly from project_info.json audio_tracce
+    extraction_tracks = info.get("audio_tracce", [])
+    extraction_done   = len(extraction_tracks) > 0
+
     transcripts  = read_stage("transcripts")
     translations = read_stage("translated")
     dubbed       = read_stage("dubbed")
 
     ultima_mod = info.get("progetto", {}).get("ultima_modifica", "")
 
-    has_any = bool(video_src or audio_files or extraction or transcripts or translations or dubbed)
+    has_any = bool(video_src or audio_files or extraction_done or transcripts or translations or dubbed)
     if not has_any:
         print(C + D + f" {getattr(messages, 'InfoBoxEmptyProject', 'No data yet')}" + R)
         print(C + "-" * W + R)
@@ -198,6 +203,9 @@ def mostra_info_workspace(ws, messages):
         fname = Path(video_src).name
         if len(fname) > max_val:
             fname = "…" + fname[-(max_val - 1):]
+        if video_external:
+            ext_label = getattr(messages, "InfoBoxVideoExternal", "esterno")
+            fname = f"{fname} ({ext_label})"
         rows.append(fmt_row(getattr(messages, "InfoBoxVideo", "Video"), fname, ok_status=video_ok))
 
     # Audio input row (only if no video, or if files are actually in audio_input)
@@ -211,13 +219,14 @@ def mostra_info_workspace(ws, messages):
             rows.append(fmt_row(getattr(messages, "InfoBoxAudio", "Audio"),
                                 f"{len(audio_files)} {getattr(messages, 'InfoBoxManyTracks', 'file')}"))
 
-    # Extraction
-    rows.append(fmt_row(
-        getattr(messages, "InfoBoxExtraction", "Estrazione"),
-        stage_row(extraction,
-                  lambda tid, m: tid,
-                  getattr(messages, "InfoBoxManyTracks", "tracce"))
-    ))
+    # Extraction — reads from project_info.json audio_tracce (flat structure)
+    if extraction_done:
+        n = len(extraction_tracks)
+        ext_val = (extraction_tracks[0]["track_id"] if n == 1
+                   else f"{n} {getattr(messages, 'InfoBoxManyTracks', 'tracce')}")
+    else:
+        ext_val = "—"
+    rows.append(fmt_row(getattr(messages, "InfoBoxExtraction", "Estrazione"), ext_val))
 
     # Transcription
     rows.append(fmt_row(
