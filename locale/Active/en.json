@@ -588,6 +588,7 @@
   "InfoBoxEmpty": "No active project",
   "InfoBoxEmptyProject": "No data yet",
   "RegistaNoProject": "No active project.",
+  "RegistaNoProjectHint": "No active project — press 0 to create one.",
   "RegistaWelcome": "Welcome to Dubbing Toolkit!\nTo get started, create your first project by entering a name below,\nor press Enter to use today's date as the default name.",
   "RegistaLoadedProject": "Project loaded: {0}",
   "RegistaSelectOrCreate": "Select number or new project name (Enter: \"{0}\"):",

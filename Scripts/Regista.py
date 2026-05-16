@@ -71,7 +71,7 @@ def print_separator(lines=5):
 # Title display
 # =========================================================
 def mostra_titolo_menu(messages, titolo_key, ws=None, width=38):
-    """Show a menu title with active project name."""
+    """Show a menu title with active project name or no-project hint."""
     C, Y, R = Fore.CYAN, Fore.YELLOW, Style.RESET_ALL
     titolo = getattr(messages, titolo_key, f"[MISSING: {titolo_key}]")
     print("\n" + C + "-" * width + R)
@@ -79,6 +79,10 @@ def mostra_titolo_menu(messages, titolo_key, ws=None, width=38):
     if ws is not None:
         template = getattr(messages, "RegistaWorkspaceNamed", "[Progetto: {0}]")
         print(Y + template.format(ws.name) + R)
+    else:
+        hint = getattr(messages, "RegistaNoProjectHint",
+                       "Nessun progetto attivo — premi 0 per crearne uno.")
+        print(Y + hint + R)
     print(C + "-" * width + R)
 
 
@@ -697,10 +701,35 @@ def main(messages):
         msg = getattr(messages, "RegistaLoadedProject", "Progetto caricato: {0}").format(ws.name)
         print(Fore.GREEN + msg + Style.RESET_ALL)
 
-    while True:
-        if ws is None:
-            ws = seleziona_o_crea_progetto(messages, settings)
+    # Show welcome box on first run only
+    _PERSISTENT_FILE = Path.cwd() / "Settings" / "settings_persistent.json"
+    _DEFAULT_FILE    = Path.cwd() / "Settings" / "settings_default.json"
+    try:
+        with _PERSISTENT_FILE.open("r", encoding="utf-8-sig") as _f:
+            _persistent = json.load(_f)
+    except Exception:
+        _persistent = {}
 
+    if _persistent.get("first_run", False) and ws is None:
+        welcome = getattr(messages, "RegistaWelcome", "")
+        if welcome:
+            lines = welcome.split("\n")
+            box_w = max(len(l) for l in lines) + 4
+            print()
+            print(Fore.CYAN + "╔" + "═" * box_w + "╗" + Style.RESET_ALL)
+            for line in lines:
+                print(Fore.CYAN + "║" + Style.RESET_ALL + "  " + line.ljust(box_w - 2) + Fore.CYAN + "║" + Style.RESET_ALL)
+            print(Fore.CYAN + "╚" + "═" * box_w + "╝" + Style.RESET_ALL)
+            print()
+        _persistent["first_run"] = False
+        try:
+            from core.utils_settings import write_json_atomic, merge_and_rebuild
+            write_json_atomic(_PERSISTENT_FILE, _persistent)
+            merge_and_rebuild(_DEFAULT_FILE, _PERSISTENT_FILE, SETTINGS_FILE)
+        except Exception:
+            pass
+
+    while True:
         mostra_titolo_menu(messages, "MenuFlussoLavoroTitle", ws, width=54)
         mostra_info_workspace(ws, messages)
         scelta = menu(messages, tts_enabled)

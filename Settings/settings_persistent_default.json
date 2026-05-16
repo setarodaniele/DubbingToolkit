@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "language_preset_from_installer": false,
+  "first_run": true,
   "interface_lang": "en",
   "model": "small",
   "voice": null,

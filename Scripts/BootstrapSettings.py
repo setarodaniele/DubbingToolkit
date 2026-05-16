@@ -85,6 +85,7 @@ def _write_atomic(path: Path, data: dict) -> None:
 
 PERSISTENT_FIELDS = {
     "language_preset_from_installer",
+    "first_run",
     "interface_lang",
     "model",
     "voice",
