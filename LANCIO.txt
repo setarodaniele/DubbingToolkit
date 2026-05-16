@@ -1,0 +1,134 @@
+LANCIO.txt
+Roadmap verso la pubblicazione su Product Hunt
+===============================================
+Progetto: DubbingToolkit
+Obiettivo: pubblicazione stabile su Product Hunt
+Aggiornato: 2026-05-16
+
+
+=====================================
+= STATO ATTUALE
+=====================================
+
+  Versione: v0.1.0-alpha
+  Installer: funzionante su Win10 e Win11 (VM pulite, verificato)
+  Pipeline: testata su macchina principale; da verificare su installazione pulita con credenziali
+  Pubblico attuale: solo sviluppatore
+
+
+=====================================
+= NOTE STRATEGICHE
+=====================================
+
+  Credenziali
+  -----------
+  - Il tool richiede credenziali Google o Azure per il TTS
+  - Non e' un problema bloccante per il lancio: e' nella natura del tool
+  - Soluzione: video tutorial che mostra come ottenere e configurare le credenziali
+  - Fase successiva (post-lancio): valutare un sistema di credenziali condivise/demo
+    per abbassare la barriera d'ingresso
+
+  Video dimostrativo
+  ------------------
+  - Idea: doppiare il video tutorial del tool con il tool stesso
+    (massima coerenza dimostrativa — il video mostra e dimostra nello stesso tempo)
+  - Coprire: installazione, configurazione credenziali, pipeline completa, risultato audio
+
+  Landing page
+  ------------
+  - Non serve un sito dedicato nella fase iniziale
+  - La pagina GitHub del repository (README.md) e' la landing page
+  - Va curata con: descrizione chiara, screenshot/GIF, requisiti, istruzioni rapide
+
+
+=====================================
+= FASE 1 — STABILIZZAZIONE TECNICA
+=====================================
+  Prerequisito per tutto il resto. Il software deve funzionare
+  in modo affidabile su un'installazione Windows pulita.
+
+  [ ] Test pipeline completa con credenziali su VM pulita
+        (estrai -> trascrivi -> traduci -> dubba, risultato audio OK)
+  [ ] Build PRODUCTION + ricompila InnoSetup
+  [ ] Carica nuovo setup.exe su GitHub Release v0.1.0-alpha
+  [ ] Verifica installer aggiornato su almeno una VM pulita
+  [ ] Bump versione: v0.1.0-alpha -> v0.2.0-beta in settings_default.json e Gist
+  [x] RuntimeDependencies: VC++ Redistributable auto-install
+  [x] RuntimeDependencies: Windows Long Paths auto-enable
+  [x] Installer: finestra non bloccata durante cancellazione venv (upgrade)
+  [x] Installer: avviso re-download dipendenze in ReadyToUpdate
+  [x] Dipendenze: sistema JSON ordinato (Config/dependencies.json)
+  [x] Test VM Win10 e Win11 (installazione base OK)
+
+
+=====================================
+= FASE 2 — CONTENUTI E PRESENTAZIONE
+=====================================
+  Il software funziona: ora deve essere comprensibile e presentabile.
+
+  README GitHub
+  -------------
+  [ ] Descrizione chiara in inglese (cosa fa, a chi serve, requisiti)
+  [ ] Screenshot o GIF della schermata principale
+  [ ] Sezione "Quick Start" (installa, configura credenziali, avvia)
+  [ ] Badge: versione, licenza, piattaforma
+  [ ] Link al video dimostrativo
+
+  Video dimostrativo
+  ------------------
+  [ ] Scaletta video (installazione + credenziali + pipeline + risultato)
+  [ ] Registrazione schermo con narrazione
+  [ ] Doppiaggio del video con DubbingToolkit stesso
+  [ ] Upload su YouTube (link da inserire in README e Product Hunt)
+
+  Documentazione credenziali
+  --------------------------
+  [ ] Guida Google Cloud TTS: come creare progetto, service account, scaricare JSON
+  [ ] Guida Azure Cognitive Services: come ottenere subscription key e region
+  [ ] Entrambe gia' parzialmente in Docs/ — rivedere e aggiornare
+
+
+=====================================
+= FASE 3 — PRE-LAUNCH PRODUCT HUNT
+=====================================
+  Preparazione specifica per il lancio su Product Hunt.
+
+  Asset grafici
+  -------------
+  [ ] Logo / thumbnail 240x240px
+  [ ] Gallery immagini (screenshot applicazione, pipeline, risultato)
+  [ ] Eventuale GIF animata del flusso operativo
+
+  Testi Product Hunt
+  ------------------
+  [ ] Tagline (max 60 caratteri) — esempio: "Dub tutorial videos automatically with AI"
+  [ ] Descrizione breve (primo paragrafo visibile) — chiara, orientata al beneficio
+  [ ] Descrizione completa con funzionalita', requisiti, link
+  [ ] Topics / categorie da selezionare (Productivity, AI, Video, Developer Tools...)
+
+  Logistica
+  ---------
+  [ ] Scegliere il giorno di lancio (martedi'-giovedi' sono i migliori)
+  [ ] Preparare risposte per le domande piu' probabili (credenziali, costo, OS support)
+  [ ] Avere il video pronto e linkato prima del lancio
+
+
+=====================================
+= FASE 4 — LAUNCH DAY
+=====================================
+
+  [ ] Pubblicare il post su Product Hunt
+  [ ] Monitorare commenti e rispondere prontamente
+  [ ] Condividere sui canali disponibili
+
+
+=====================================
+= VOCI IN SOSPESO / VALUTAZIONI FUTURE
+=====================================
+  (non bloccanti per il lancio, da valutare dopo)
+
+  - Sistema credenziali demo/condivise per abbassare barriera ingresso
+  - Integrazione WhisperX per trascrizione piu' precisa
+  - Provider TTS aggiuntivi (OpenAI / HuggingFace)
+  - Supporto macOS / Linux (attualmente Windows only)
+  - Versione con interfaccia grafica (GUI) — considerare dopo la stabilita' CLI
