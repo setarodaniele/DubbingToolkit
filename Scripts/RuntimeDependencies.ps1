@@ -76,6 +76,12 @@ $RD_VoicesUrl          = "https://github.com/SmallSoftwareHouse/DubbingToolkit/r
 
 $RD_7zrExe = Join-Path $RD_ToolsDir '7zr.exe'
 
+# 2.7 Visual C++ Redistributable (required by PyTorch)
+
+$RD_VCRedistUrl    = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+$RD_VCRedistExe    = Join-Path $env:TEMP "vc_redist.x64.exe"
+$RD_VCRedistRegKey = "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64"
+
 
 # =========================================================
 # 3. UTILITIES
@@ -157,14 +163,25 @@ Initialize-RDMessages
 # =========================================================
 # 4. CORE LOGIC
 # =========================================================
-# 4.1 Test-FfmpegPresent   - check if ffmpeg.exe exists at the expected path
-# 4.2 Test-VoicesPresent   - check if voices_output contains at least one provider subdir
-# 4.3 Invoke-RDDownload    - download a file from URL using WebClient (streams to disk)
-# 4.4 Invoke-FfmpegSetup   - download, extract, and verify ffmpeg
-# 4.5 Invoke-VoicesSetup   - download, extract, and verify voices_output
+# 4.1 Test-FfmpegPresent    - check if ffmpeg.exe exists at the expected path
+# 4.2 Test-VoicesPresent    - check if voices_output contains at least one provider subdir
+# 4.3 Test-VCRedistPresent  - check registry for Visual C++ Redistributable 2015-2022 x64
+# 4.4 Invoke-RDDownload     - download a file from URL using WebClient (streams to disk)
+# 4.5 Invoke-FfmpegSetup    - download, extract, and verify ffmpeg
+# 4.6 Invoke-VoicesSetup    - download, extract, and verify voices_output
+# 4.7 Invoke-VCRedistSetup  - download and install Visual C++ Redistributable (requires UAC)
 
 function Test-FfmpegPresent {
     return (Test-Path $RD_FfmpegExe)
+}
+
+function Test-VCRedistPresent {
+    try {
+        $val = Get-ItemProperty -Path $RD_VCRedistRegKey -ErrorAction SilentlyContinue
+        return ($null -ne $val -and $val.Installed -eq 1)
+    } catch {
+        return $false
+    }
 }
 
 function Test-VoicesPresent {
@@ -275,6 +292,32 @@ function Invoke-VoicesSetup {
     }
 }
 
+function Invoke-VCRedistSetup {
+    Write-RDLog (Get-RDMsg "RD_VCRedistDownloading")
+    $downloaded = Invoke-RDDownload -Url $RD_VCRedistUrl -Destination $RD_VCRedistExe
+    if (-not $downloaded) { return $false }
+
+    Write-RDLog (Get-RDMsg "RD_VCRedistInstalling")
+    try {
+        $proc = Start-Process -FilePath $RD_VCRedistExe `
+                              -ArgumentList "/install /quiet /norestart" `
+                              -Verb RunAs -Wait -PassThru
+        # Exit code 0 = success, 3010 = success but reboot required
+        if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
+            Write-RDLog (Get-RDMsg "RD_VCRedistInstalled") "OK"
+            return $true
+        } else {
+            Write-RDLog (Get-RDMsg "RD_VCRedistSetupFailed" $proc.ExitCode) "ERROR"
+            return $false
+        }
+    } catch {
+        Write-RDLog (Get-RDMsg "RD_VCRedistSetupFailed" $_) "ERROR"
+        return $false
+    } finally {
+        Remove-Item $RD_VCRedistExe -Force -ErrorAction SilentlyContinue
+    }
+}
+
 
 # =========================================================
 # 5. MAIN EXECUTION
@@ -286,6 +329,17 @@ function Invoke-VoicesSetup {
 function Invoke-RuntimeDependencyCheck {
     Write-RDLog (Get-RDMsg "RD_CheckStart")
     $allOk = $true
+
+    # --- Visual C++ Redistributable ---
+    if (Test-VCRedistPresent) {
+        Write-RDLog (Get-RDMsg "RD_VCRedistPresent") "OK"
+    } else {
+        $ok = Invoke-VCRedistSetup
+        if (-not $ok) {
+            Write-RDLog (Get-RDMsg "RD_VCRedistSetupFailed" "see above") "ERROR"
+            $allOk = $false
+        }
+    }
 
     # --- ffmpeg ---
     if (Test-FfmpegPresent) {
