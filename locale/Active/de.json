@@ -9,7 +9,7 @@
   "Checkpoint0Warning": "WARNUNG!!: Manuelle Überprüfung auf aktive Eindämmung.",
   "Checkpoint0Step1": "1) Deaktivieren Sie jegliche Antivirensoftware oder Sandbox, die die Ausführung von Python blockieren könnte.",
   "Checkpoint0Step2": "2) Stellen Sie sicher, dass Sie über die Ausführungsberechtigung für Skripte und Installationen verfügen.",
-  "Checkpoint0Step3": "3) Drücken Sie ENTER nur dann, wenn Sie sich sicher sind.",
+  "Checkpoint0Step3": "3) Drücken Sie ENTER, wenn Sie bereit sind: ",
   "Checkpoint1": "Kontrollpunkt 1: Initialisierung der virtuellen Umgebung...",
   "Checkpoint1_5": "Prüfpunkt 1.5: Abhängigkeiten prüfen/installieren...",
   "InstallDependencies_Starting": "[INSTALLATION] Installation der Abhängigkeiten wird gestartet",

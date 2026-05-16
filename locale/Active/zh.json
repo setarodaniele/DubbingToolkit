@@ -9,7 +9,7 @@
   "Checkpoint0Warning": "警告！！：手动检查是否存在有效隔离。",
   "Checkpoint0Step1": "1）禁用任何可能阻止 Python 执行的防病毒软件或沙箱隔离措施。",
   "Checkpoint0Step2": "2）确保您拥有脚本和安装程序的执行权限。",
-  "Checkpoint0Step3": "3）只有在确定要继续的情况下，才按回车键继续。",
+  "Checkpoint0Step3": "3）准备好后按回车键继续：",
   "Checkpoint1": "检查点 1：初始化虚拟环境……",
   "Checkpoint1_5": "检查点 1.5：验证/安装依赖项……",
   "InstallDependencies_Starting": "[安装] 开始依赖项安装",

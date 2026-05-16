@@ -9,7 +9,7 @@
   "Checkpoint0Warning": "ATTENTION !! : Vérification manuelle du confinement actif.",
   "Checkpoint0Step1": "1) Désactivez tout antivirus ou sandbox susceptible de bloquer l'exécution de Python.",
   "Checkpoint0Step2": "2) Assurez-vous de disposer des autorisations d'exécution pour les scripts et les installations.",
-  "Checkpoint0Step3": "3) Appuyez sur ENTRÉE pour continuer uniquement si vous êtes sûr.",
+  "Checkpoint0Step3": "3) Appuyez sur ENTRÉE quand vous êtes prêt : ",
   "Checkpoint1": "Point de contrôle 1 : Initialisation de l'environnement virtuel…",
   "Checkpoint1_5": "Point de contrôle 1.5 : Vérifier/Installer les dépendances…",
   "InstallDependencies_Starting": "[INSTALL] Démarrage de l'installation des dépendances",

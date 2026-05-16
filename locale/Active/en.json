@@ -9,7 +9,7 @@
   "Checkpoint0Warning": "WARNING!!: Manual check for active containment.",
   "Checkpoint0Step1": "1) Disable any antivirus or sandbox containment that might block Python execution.",
   "Checkpoint0Step2": "2) Make sure you have execute permissions for scripts and installations.",
-  "Checkpoint0Step3": "3) Press ENTER to continue only if you are sure.",
+  "Checkpoint0Step3": "3) Press ENTER when you are ready: ",
   "Checkpoint1": "Checkpoint 1: Initializing the virtual environment...",
   "Checkpoint1_5": "Checkpoint 1.5: Verify/Install Dependencies...",
   "InstallDependencies_Starting": "[INSTALL] Starting dependency installation",

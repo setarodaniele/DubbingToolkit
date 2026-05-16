@@ -139,7 +139,7 @@ Write-Log "Checkpoint0"
 Write-Log "Checkpoint0Warning" "WARN"
 Write-Log "Checkpoint0Step1" "WARN"
 Write-Log "Checkpoint0Step2" "WARN"
-Write-Log "Checkpoint0Step3" "WARN"
+Write-Host -NoNewline "[WARN] $($Messages.Checkpoint0Step3)" -ForegroundColor Yellow
 [void][System.Console]::ReadLine()
 
 # --------------------------------------------------
@@ -344,7 +344,10 @@ function Test-LockAlive {
         $data      = Get-Content $LockPath -Encoding UTF8 -Raw | ConvertFrom-Json
         $proc      = Get-Process -Id ([int]$data.pid) -ErrorAction SilentlyContinue
         $nameNoExt = ($data.process -replace '\.exe$', '')
-        return ($null -ne $proc -and $proc.Name -ieq $nameNoExt)
+        if ($null -eq $proc -or -not ($proc.Name -ieq $nameNoExt)) { return $false }
+        # Guard against PID reuse: verify the process started at or before the lock timestamp
+        $lockTime = [datetime]::Parse($data.started_at)
+        return ($proc.StartTime -le $lockTime.AddSeconds(5))
     } catch { return $false }
 }
 

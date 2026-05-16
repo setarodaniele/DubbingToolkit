@@ -9,7 +9,7 @@
   "Checkpoint0Warning": "¡¡ADVERTENCIA!!: Verificación manual de la contención activa.",
   "Checkpoint0Step1": "1) Desactive cualquier antivirus o sandbox que pueda bloquear la ejecución de Python.",
   "Checkpoint0Step2": "2) Asegúrese de tener permisos de ejecución para scripts e instalaciones.",
-  "Checkpoint0Step3": "3) Pulse ENTER para continuar solo si está seguro.",
+  "Checkpoint0Step3": "3) Pulse ENTER cuando esté listo: ",
   "Checkpoint1": "Punto de control 1: Inicializando el entorno virtual...",
   "Checkpoint1_5": "Punto de control 1.5: Verificar/Instalar dependencias...",
   "InstallDependencies_Starting": "[INSTALAR] Iniciando la instalación de dependencias",

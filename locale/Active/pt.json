@@ -9,7 +9,7 @@
   "Checkpoint0Warning": "ATENÇÃO!!: Verificação manual de contenção ativa.",
   "Checkpoint0Step1": "1) Desative qualquer antivírus ou sandbox que possa bloquear a execução do Python.",
   "Checkpoint0Step2": "2) Certifique-se de ter permissões de execução para scripts e instalações.",
-  "Checkpoint0Step3": "3) Pressione ENTER para continuar somente se tiver certeza.",
+  "Checkpoint0Step3": "3) Pressione ENTER quando estiver pronto: ",
   "Checkpoint1": "Ponto de verificação 1: Inicializando o ambiente virtual...",
   "Checkpoint1_5": "Ponto de verificação 1.5: Verificar/Instalar dependências...",
   "InstallDependencies_Starting": "[INSTALAR] Iniciando a instalação de dependências",
