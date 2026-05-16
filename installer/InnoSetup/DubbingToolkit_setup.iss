@@ -159,6 +159,22 @@ spanish.LaunchDescription=Iniciar Dubbing Toolkit
 portuguese.LaunchDescription=Iniciar o Dubbing Toolkit
 russian.LaunchDescription=Запустить Dubbing Toolkit
 
+; --- [02.07] PROGRESSO PULIZIA PRE-INSTALLAZIONE ---
+english.CleanupCounting=Analyzing previous installation...
+english.CleanupProgress=Cleaning up:
+italian.CleanupCounting=Analisi installazione precedente in corso...
+italian.CleanupProgress=Pulizia in corso:
+french.CleanupCounting=Analyse de l'installation precedente...
+french.CleanupProgress=Nettoyage en cours :
+german.CleanupCounting=Analyse der vorherigen Installation...
+german.CleanupProgress=Bereinigung:
+spanish.CleanupCounting=Analizando instalacion anterior...
+spanish.CleanupProgress=Limpieza en curso:
+portuguese.CleanupCounting=Analisando instalacao anterior...
+portuguese.CleanupProgress=Limpeza em andamento:
+russian.CleanupCounting=Анализ предыдущей установки...
+russian.CleanupProgress=Очистка:
+
 ; --- [02.04] MESSAGGIO FINALE DISINSTALLAZIONE ---
 english.UninstallRemainingMsg=If work files or credentials were preserved, the following folders may still be present in the installation folder:%n%n  - Workspace  (projects, audio, video, transcripts, etc.)%n  - Billing%n  - credentials%n  - Logs%n%nYou can find them in the installation folder and delete them manually if you no longer need them.
 italian.UninstallRemainingMsg=Se i file di lavoro o le credenziali sono stati preservati, le seguenti cartelle potrebbero essere ancora presenti nella cartella di installazione:%n%n  - Workspace  (progetti, audio, video, trascrizioni, ecc.)%n  - Billing%n  - credentials%n  - Logs%n%nLe trovi nella cartella di installazione. Puoi eliminarle manualmente se non ti servono più.
@@ -212,6 +228,9 @@ var
   GChkLogs:             TCheckBox;
   GChkWork:             TCheckBox;
   GConfirmDeleteResult: Boolean;
+  GDeletedFiles:        Integer;
+  GTotalFiles:          Integer;
+  GLastPct:             Integer;
 
 // ------------------------------------------------------------
 // [08.02a] FORM CONFERMA ELIMINAZIONE
@@ -425,6 +444,80 @@ begin
 end;
 
 // ------------------------------------------------------------
+// [08.02c] CONTEGGIO FILE RICORSIVO (per progress pulizia)
+// ------------------------------------------------------------
+function CountFilesRec(const Path: String): Integer;
+var
+  FindRec: TFindRec;
+  Count:   Integer;
+begin
+  Count := 0;
+  if FindFirst(Path + '\*', FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then
+        begin
+          if FindRec.Attributes and $10 <> 0 then
+            Count := Count + CountFilesRec(Path + '\' + FindRec.Name)
+          else
+            Inc(Count);
+        end;
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+    end;
+  end;
+  Result := Count;
+end;
+
+// ------------------------------------------------------------
+// [08.02d] CANCELLAZIONE CON PROGRESS (solo per venv)
+// ------------------------------------------------------------
+procedure DeleteFolderWithProgress(const Path: String);
+var
+  FindRec:  TFindRec;
+  FullPath: String;
+  CurPct:   Integer;
+begin
+  if FindFirst(Path + '\*', FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then
+        begin
+          FullPath := Path + '\' + FindRec.Name;
+          if FindRec.Attributes and $10 <> 0 then
+            DeleteFolderWithProgress(FullPath)
+          else
+          begin
+            DeleteFile(FullPath);
+            Inc(GDeletedFiles);
+            if GTotalFiles > 0 then
+            begin
+              CurPct := GDeletedFiles * 100 div GTotalFiles;
+              if CurPct <> GLastPct then
+              begin
+                GLastPct := CurPct;
+                WizardForm.StatusLabel.Caption :=
+                  CustomMessage('CleanupProgress') + '  ' +
+                  IntToStr(GDeletedFiles) + ' / ' + IntToStr(GTotalFiles) +
+                  '  (' + IntToStr(CurPct) + '%)';
+                WizardForm.FilenameLabel.Caption := FindRec.Name;
+                WizardForm.Refresh;
+              end;
+            end;
+          end;
+        end;
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+    end;
+  end;
+  RemoveDir(Path);
+end;
+
+// ------------------------------------------------------------
 // [08.03] PULIZIA CARTELLE APP (aggiornamento)
 // ------------------------------------------------------------
 procedure FillAppFolders(AppFolders: TStringList);
@@ -446,18 +539,34 @@ end;
 
 procedure CleanAppFolders(InstallDir: String);
 var
-  AppFolders: TStringList;
-  i:          Integer;
-  FolderPath: String;
+  AppFolders:  TStringList;
+  i:           Integer;
+  FolderName:  String;
+  FolderPath:  String;
 begin
   AppFolders := TStringList.Create;
   try
     FillAppFolders(AppFolders);
     for i := 0 to AppFolders.Count - 1 do
     begin
-      FolderPath := InstallDir + '\' + AppFolders[i];
+      FolderName := AppFolders[i];
+      FolderPath := InstallDir + '\' + FolderName;
       if DirExists(FolderPath) then
-        DelTree(FolderPath, True, True, True);
+      begin
+        if FolderName = 'venv' then
+        begin
+          WizardForm.StatusLabel.Caption  := CustomMessage('CleanupCounting');
+          WizardForm.FilenameLabel.Caption := FolderPath;
+          WizardForm.Refresh;
+          GTotalFiles   := CountFilesRec(FolderPath);
+          GDeletedFiles := 0;
+          GLastPct      := -1;
+          DeleteFolderWithProgress(FolderPath);
+          WizardForm.StatusLabel.Caption  := '';
+          WizardForm.FilenameLabel.Caption := '';
+        end else
+          DelTree(FolderPath, True, True, True);
+      end;
     end;
   finally
     AppFolders.Free;
