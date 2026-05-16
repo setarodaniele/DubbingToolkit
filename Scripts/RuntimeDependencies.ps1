@@ -82,6 +82,11 @@ $RD_VCRedistUrl    = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 $RD_VCRedistExe    = Join-Path $env:TEMP "vc_redist.x64.exe"
 $RD_VCRedistRegKey = "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64"
 
+# 2.8 Windows Long Paths (required by pip for deeply nested packages)
+
+$RD_LongPathsRegKey  = "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"
+$RD_LongPathsRegName = "LongPathsEnabled"
+
 
 # =========================================================
 # 3. UTILITIES
@@ -163,13 +168,15 @@ Initialize-RDMessages
 # =========================================================
 # 4. CORE LOGIC
 # =========================================================
-# 4.1 Test-FfmpegPresent    - check if ffmpeg.exe exists at the expected path
-# 4.2 Test-VoicesPresent    - check if voices_output contains at least one provider subdir
-# 4.3 Test-VCRedistPresent  - check registry for Visual C++ Redistributable 2015-2022 x64
-# 4.4 Invoke-RDDownload     - download a file from URL using WebClient (streams to disk)
-# 4.5 Invoke-FfmpegSetup    - download, extract, and verify ffmpeg
-# 4.6 Invoke-VoicesSetup    - download, extract, and verify voices_output
-# 4.7 Invoke-VCRedistSetup  - download and install Visual C++ Redistributable (requires UAC)
+# 4.1 Test-FfmpegPresent     - check if ffmpeg.exe exists at the expected path
+# 4.2 Test-VoicesPresent     - check if voices_output contains at least one provider subdir
+# 4.3 Test-VCRedistPresent   - check registry for Visual C++ Redistributable 2015-2022 x64
+# 4.4 Test-LongPathsEnabled  - check registry for Windows Long Paths support
+# 4.5 Invoke-RDDownload      - download a file from URL using WebClient (streams to disk)
+# 4.6 Invoke-FfmpegSetup     - download, extract, and verify ffmpeg
+# 4.7 Invoke-VoicesSetup     - download, extract, and verify voices_output
+# 4.8 Invoke-VCRedistSetup   - download and install Visual C++ Redistributable (requires UAC)
+# 4.9 Invoke-LongPathsEnable - enable Windows Long Paths via registry (requires UAC if needed)
 
 function Test-FfmpegPresent {
     return (Test-Path $RD_FfmpegExe)
@@ -292,6 +299,41 @@ function Invoke-VoicesSetup {
     }
 }
 
+function Test-LongPathsEnabled {
+    try {
+        $val = Get-ItemProperty -Path $RD_LongPathsRegKey -Name $RD_LongPathsRegName -ErrorAction SilentlyContinue
+        return ($null -ne $val -and $val.$RD_LongPathsRegName -eq 1)
+    } catch {
+        return $false
+    }
+}
+
+function Invoke-LongPathsEnable {
+    Write-RDLog (Get-RDMsg "RD_LongPathsEnabling")
+    # Try direct write first (works if already running as admin)
+    try {
+        Set-ItemProperty -Path $RD_LongPathsRegKey -Name $RD_LongPathsRegName -Value 1 -Type DWord -ErrorAction Stop
+        Write-RDLog (Get-RDMsg "RD_LongPathsEnabled") "OK"
+        return $true
+    } catch {
+        # Not admin - request elevation for this single registry write
+    }
+    try {
+        $cmd = "Set-ItemProperty -Path '$RD_LongPathsRegKey' -Name '$RD_LongPathsRegName' -Value 1 -Type DWord"
+        $proc = Start-Process powershell -ArgumentList "-NoProfile -Command $cmd" -Verb RunAs -Wait -PassThru
+        if ($proc.ExitCode -eq 0) {
+            Write-RDLog (Get-RDMsg "RD_LongPathsEnabled") "OK"
+            return $true
+        } else {
+            Write-RDLog (Get-RDMsg "RD_LongPathsSetupFailed") "WARN"
+            return $false
+        }
+    } catch {
+        Write-RDLog (Get-RDMsg "RD_LongPathsSetupFailed") "WARN"
+        return $false
+    }
+}
+
 function Invoke-VCRedistSetup {
     Write-RDLog (Get-RDMsg "RD_VCRedistDownloading")
     $downloaded = Invoke-RDDownload -Url $RD_VCRedistUrl -Destination $RD_VCRedistExe
@@ -329,6 +371,17 @@ function Invoke-VCRedistSetup {
 function Invoke-RuntimeDependencyCheck {
     Write-RDLog (Get-RDMsg "RD_CheckStart")
     $allOk = $true
+
+    # --- Windows Long Paths ---
+    if (Test-LongPathsEnabled) {
+        Write-RDLog (Get-RDMsg "RD_LongPathsPresent") "OK"
+    } else {
+        # Non-fatal: warn if it can't be enabled, pip install may still work
+        $ok = Invoke-LongPathsEnable
+        if (-not $ok) {
+            Write-RDLog (Get-RDMsg "RD_LongPathsSetupFailed") "WARN"
+        }
+    }
 
     # --- Visual C++ Redistributable ---
     if (Test-VCRedistPresent) {
