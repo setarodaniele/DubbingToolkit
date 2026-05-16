@@ -119,6 +119,9 @@ def scegli_motore_tts(messages):
 # =========================================================
 def mostra_info_workspace(ws, messages):
     """Print a pipeline status block for the active workspace."""
+    if ws is None:
+        return
+
     W   = 54
     LBL = 17   # label column width including leading space and colon
 
