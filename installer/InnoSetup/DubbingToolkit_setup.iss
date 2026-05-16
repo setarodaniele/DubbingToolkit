@@ -546,6 +546,7 @@ begin
   Content :=
     '{' + #10 +
     '  "language_preset_from_installer": true,' + #10 +
+    '  "first_run": true,' + #10 +
     '  "interface_lang": "' + LangCode + '"' + #10 +
     '}';
   SaveStringToFile(Path, Content, False);

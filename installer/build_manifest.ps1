@@ -35,6 +35,7 @@ $DefaultEntries = @(
     [ordered]@{ path="locale";       type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
     [ordered]@{ path="ps";           type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
     [ordered]@{ path="Scripts";      type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
+    [ordered]@{ path="Config";       type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
     [ordered]@{ path="Settings";     type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
     [ordered]@{ path="Docs";         type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
     [ordered]@{ path="voices";       type="system"; install=$true;  create_empty=$false; recursive=$true;  clean_on_upgrade=$true;  remove_on_uninstall=$true;  uninstall_prompt=$false },
